@@ -183,7 +183,7 @@ function LoginPage() {
                   onChange={e => setRememberMe(e.target.checked)}
                 />
                 <span className="checkmark" />
-                <span>Remember me for 30 days</span>
+                <span>Remember me for 60 days</span>
               </label>
             </div>
 
