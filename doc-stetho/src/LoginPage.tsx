@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import './LoginPage.css'
 import MailIcon from './assets/icons/MailIcon'
 import LockIcon from './assets/icons/LockIcon'
 import EyeIcon from './assets/icons/EyeIcon'
@@ -21,36 +20,36 @@ function LoginPage() {
     setTimeout(() => setIsLoading(false), 2000)
   }
 
-  return (
-    <div className="login-root">
-      {/* Animated background blobs */}
-      <div className="bg-blob blob-1" />
-      <div className="bg-blob blob-2" />
-      <div className="bg-blob blob-3" />
+  const blobBase = "fixed rounded-full pointer-events-none z-0 opacity-[0.18] blur-[80px]"
 
+  return (
+    <div className="relative min-h-screen flex font-['Inter',system-ui,sans-serif] overflow-hidden bg-[#EDF3F8]">
+
+      {/* Animated background blobs */}
+
+      <div className={`${blobBase} w-[600px] h-[600px] bg-[radial-gradient(circle,#4DBFBF,#1A7A8A)] -top-[200px] -left-[150px] animate-[blobFloat_14s_ease-in-out_infinite_alternate]`} />
+      <div className={`${blobBase} w-[500px] h-[500px] bg-[radial-gradient(circle,#1B2D5E,#1A7A8A)] -bottom-[150px] -right-[100px] animate-[blobFloat_10s_ease-in-out_-4s_infinite_alternate]`} />
+      <div className={`${blobBase} w-[350px] h-[350px] bg-[radial-gradient(circle,#4DBFBF,#EDF3F8)] top-[40%] left-[40%] animate-[blobFloat_18s_ease-in-out_-8s_infinite_alternate]`} />
       {/* Left Panel - Branding */}
-      <div className="login-branding">
-        <div className="branding-content">
-          <div className="logo-mark">
-            {/* SVG logo inline */}
-            <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-              {/* Outer ring */}
+      <div className="relative z-[1] w-[48%] hidden md:flex items-center justify-center px-12 py-[60px] overflow-hidden bg-[linear-gradient(145deg,#1B2D5E_0%,#1A7A8A_55%,#2AABB0_100%)]
+        before:content-[''] before:absolute before:inset-0 before:bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] before:bg-[size:40px_40px] before:pointer-events-none
+        after:content-[''] after:absolute after:w-[500px] after:h-[500px] after:rounded-full after:bg-[radial-gradient(circle,rgba(77,191,191,0.15)_0%,transparent_70%)] after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:pointer-events-none">
+
+        <div className="relative z-[2] flex flex-col items-start gap-7 max-w-[400px] w-full">
+
+          {/* Logo mark */}
+          <div className="w-24 h-24 bg-white/10 rounded-[24px] p-3.5 border border-white/15 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.2)] animate-[logoGrow_0.6s_cubic-bezier(0.34,1.56,0.64,1)_both]">
+            <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
               <circle cx="60" cy="60" r="52" stroke="#4DBFBF" strokeWidth="4" strokeDasharray="12 6" opacity="0.4" />
-              {/* Main stethoscope circle */}
               <circle cx="60" cy="60" r="42" stroke="#1A7A8A" strokeWidth="5" fill="none" />
-              {/* Inner circle */}
               <circle cx="60" cy="60" r="30" fill="#EDF8FA" />
-              {/* Chart bars */}
               <rect x="46" y="58" width="7" height="16" rx="1.5" fill="#1A7A8A" />
               <rect x="56" y="50" width="7" height="24" rx="1.5" fill="#1A7A8A" />
               <rect x="66" y="44" width="7" height="30" rx="1.5" fill="#4DBFBF" />
-              {/* Trend arrow */}
               <polyline points="44,68 54,56 64,50 76,38" stroke="#4DBFBF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
               <polyline points="70,38 76,38 76,44" stroke="#4DBFBF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-              {/* Medical cross */}
               <rect x="56" y="68" width="8" height="16" rx="1" fill="white" />
               <rect x="52" y="72" width="16" height="8" rx="1" fill="white" />
-              {/* Stethoscope hooks */}
               <path d="M36 44 Q28 44 28 52 Q28 60 36 60" stroke="#1A7A8A" strokeWidth="4" fill="none" strokeLinecap="round" />
               <circle cx="36" cy="62" r="3" fill="#4DBFBF" />
               <path d="M84 44 Q92 44 92 52 Q92 60 84 60" stroke="#1A7A8A" strokeWidth="4" fill="none" strokeLinecap="round" />
@@ -58,71 +57,73 @@ function LoginPage() {
             </svg>
           </div>
 
-          <div className="brand-text">
-            <h1 className="brand-name">
-              <span className="brand-doc">doc</span>
-              <span className="brand-stetho">stetho</span>
+          {/* Brand name */}
+          <div className="animate-[slideUp_0.5s_ease_0.1s_both]">
+            <h1 className="text-[44px] font-extrabold tracking-[-1.5px] leading-none text-white">
+              <span className="text-white/75 font-light">doc</span>
+              <span className="text-white font-extrabold">stetho</span>
             </h1>
-            <p className="brand-tagline">DOCTOR'S PATIENT DATA PLATFORM</p>
+            <p className="text-[11px] tracking-[2.5px] text-white/55 uppercase mt-2 font-medium">
+              DOCTOR'S PATIENT DATA PLATFORM
+            </p>
           </div>
 
-          <div className="branding-divider" />
+          {/* Divider */}
+          <div className="w-full h-px bg-[linear-gradient(90deg,rgba(255,255,255,0.3),transparent)] animate-[slideUp_0.5s_ease_0.2s_both]" />
 
-          <div className="feature-list">
-            <div className="feature-item">
-              <div className="feature-icon">
-                <CheckCircleIcon />
+          {/* Feature list */}
+          <div className="flex flex-col gap-5 animate-[slideUp_0.5s_ease_0.3s_both]">
+            {[
+              { icon: <CheckCircleIcon />, title: 'Unified Patient Records', desc: 'Access complete medical histories in one place' },
+              { icon: <BarChartIcon />, title: 'Analytics & Insights', desc: 'Data-driven decisions for better outcomes' },
+              { icon: <LockIcon />, title: 'HIPAA Compliant', desc: 'Enterprise-grade security & privacy standards' },
+            ].map(({ icon, title, desc }) => (
+              <div key={title} className="flex items-start gap-4 group">
+                <div className="w-10 h-10 min-w-[40px] rounded-xl bg-[rgba(77,191,191,0.2)] border border-[rgba(77,191,191,0.35)] flex items-center justify-center text-[#4DBFBF] transition-all duration-200 group-hover:bg-[rgba(77,191,191,0.35)] group-hover:scale-[1.08] [&_svg]:w-[18px] [&_svg]:h-[18px]">
+                  {icon}
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-white mb-0.5">{title}</h3>
+                  <p className="text-[12.5px] text-white/55 leading-relaxed">{desc}</p>
+                </div>
               </div>
-              <div>
-                <h3>Unified Patient Records</h3>
-                <p>Access complete medical histories in one place</p>
-              </div>
-            </div>
-            <div className="feature-item">
-              <div className="feature-icon">
-                <BarChartIcon />
-              </div>
-              <div>
-                <h3>Analytics & Insights</h3>
-                <p>Data-driven decisions for better outcomes</p>
-              </div>
-            </div>
-            <div className="feature-item">
-              <div className="feature-icon">
-                <LockIcon />
-              </div>
-              <div>
-                <h3>HIPAA Compliant</h3>
-                <p>Enterprise-grade security & privacy standards</p>
-              </div>
-            </div>
+            ))}
           </div>
 
-          <div className="branding-footer">
-            <p>Trusted by <strong>5,000+</strong> medical professionals</p>
+          {/* Branding footer */}
+          <div className="animate-[slideUp_0.5s_ease_0.4s_both]">
+            <p className="text-[13px] text-white/50">
+              Trusted by <strong className="text-[#4DBFBF]">5,000+</strong> medical professionals
+            </p>
           </div>
         </div>
       </div>
 
       {/* Right Panel - Login Form */}
-      <div className="login-form-panel">
-        <div className="login-card">
-          <div className="card-header">
-            <h2 className="card-title">Welcome back</h2>
-            <p className="card-subtitle">Sign in to your DocStetho account</p>
+      <div className="relative z-[1] flex-1 flex items-center justify-center px-6 py-10">
+        <div className="bg-white/85 backdrop-blur-2xl rounded-[28px] border border-white/90 shadow-[0_4px_6px_rgba(27,45,94,0.04),0_20px_60px_rgba(27,45,94,0.12),0_0_0_1px_rgba(77,191,191,0.08)] px-10 py-11 w-full max-w-[440px] animate-[cardIn_0.6s_cubic-bezier(0.34,1.3,0.64,1)_0.1s_both]">
+
+          {/* Card Header */}
+          <div className="mb-8">
+            <h2 className="text-[28px] font-extrabold text-[#1B2D5E] tracking-[-0.8px] mb-1.5">Welcome back</h2>
+            <p className="text-sm text-gray-500 font-normal">Sign in to your DocStetho account</p>
           </div>
 
-          <form className="login-form" onSubmit={handleSubmit} id="login-form">
-            <div className="form-group">
-              <label htmlFor="email" className="form-label">Email Address</label>
-              <div className="input-wrapper">
-                <span className="input-icon">
+          <form className="flex flex-col gap-5" onSubmit={handleSubmit} id="login-form">
+
+            {/* Email */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="email" className="text-[13.5px] font-semibold text-[#1B2D5E] tracking-[0.1px]">
+                Email Address
+              </label>
+              <div className="relative flex items-center">
+                <span className="absolute left-3.5 flex items-center text-gray-400 pointer-events-none z-[1] [&_svg]:w-[18px] [&_svg]:h-[18px]">
                   <MailIcon />
                 </span>
                 <input
                   id="email"
                   type="email"
-                  className="form-input"
+                  className="peer w-full h-[50px] pl-11 pr-11 border-[1.5px] border-gray-200 rounded-xl text-[14.5px] text-[#1B2D5E] bg-white/80 outline-none transition-all duration-200 placeholder:text-[#b0b8c1] placeholder:text-sm focus:border-[#4DBFBF] focus:shadow-[0_0_0_3px_rgba(77,191,191,0.15)] focus:bg-white"
                   placeholder="doctor@hospital.com"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
@@ -132,19 +133,24 @@ function LoginPage() {
               </div>
             </div>
 
-            <div className="form-group">
-              <div className="label-row">
-                <label htmlFor="password" className="form-label">Password</label>
-                <a href="#" className="forgot-link" id="forgot-password-link">Forgot password?</a>
+            {/* Password */}
+            <div className="flex flex-col gap-2">
+              <div className="flex justify-between items-center">
+                <label htmlFor="password" className="text-[13.5px] font-semibold text-[#1B2D5E] tracking-[0.1px]">
+                  Password
+                </label>
+                <a href="#" id="forgot-password-link" className="text-[13px] font-medium text-[#1A7A8A] no-underline transition-colors duration-200 hover:text-[#4DBFBF]">
+                  Forgot password?
+                </a>
               </div>
-              <div className="input-wrapper">
-                <span className="input-icon">
+              <div className="relative flex items-center">
+                <span className="absolute left-3.5 flex items-center text-gray-400 pointer-events-none z-[1] [&_svg]:w-[18px] [&_svg]:h-[18px]">
                   <LockIcon />
                 </span>
                 <input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
-                  className="form-input"
+                  className="peer w-full h-[50px] pl-11 pr-11 border-[1.5px] border-gray-200 rounded-xl text-[14.5px] text-[#1B2D5E] bg-white/80 outline-none transition-all duration-200 placeholder:text-[#b0b8c1] placeholder:text-sm focus:border-[#4DBFBF] focus:shadow-[0_0_0_3px_rgba(77,191,191,0.15)] focus:bg-white"
                   placeholder="Enter your password"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
@@ -153,42 +159,47 @@ function LoginPage() {
                 />
                 <button
                   type="button"
-                  className="toggle-password"
                   id="toggle-password-btn"
+                  className="absolute right-3.5 bg-transparent border-none cursor-pointer text-gray-400 flex items-center p-1 rounded-md transition-all duration-200 hover:text-[#1A7A8A] hover:bg-[rgba(77,191,191,0.1)] [&_svg]:w-[18px] [&_svg]:h-[18px]"
                   onClick={() => setShowPassword(v => !v)}
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
-                  {showPassword ? (
-                    <EyeOffIcon />
-                  ) : (
-                    <EyeIcon />
-                  )}
+                  {showPassword ? <EyeOffIcon /> : <EyeIcon />}
                 </button>
               </div>
             </div>
 
-            <div className="form-extras">
-              <label className="remember-me" htmlFor="remember-me">
+            {/* Remember me */}
+            <div className="flex items-center">
+              <label className="flex items-center gap-2.5 cursor-pointer text-[13.5px] text-gray-600 select-none" htmlFor="remember-me">
                 <input
                   id="remember-me"
                   type="checkbox"
+                  className="hidden"
                   checked={rememberMe}
                   onChange={e => setRememberMe(e.target.checked)}
                 />
-                <span className="checkmark" />
+                <span className={`w-[18px] h-[18px] min-w-[18px] rounded-[5px] border-[1.5px] flex items-center justify-center transition-all duration-200 ${rememberMe ? 'bg-[linear-gradient(135deg,#1A7A8A,#4DBFBF)] border-[#4DBFBF]' : 'border-gray-300 bg-white'}`}>
+                  {rememberMe && (
+                    <svg width="10" height="7" viewBox="0 0 10 7" fill="none">
+                      <path d="M1 3.5L3.5 6L9 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </span>
                 <span>Remember me for 60 days</span>
               </label>
             </div>
 
+            {/* Submit button */}
             <button
               type="submit"
-              className={`submit-btn ${isLoading ? 'loading' : ''}`}
               id="login-submit-btn"
               disabled={isLoading}
+              className="relative w-full h-[52px] border-none rounded-[13px] bg-[linear-gradient(135deg,#1B2D5E_0%,#1A7A8A_60%,#4DBFBF_100%)] text-white text-[15.5px] font-bold tracking-[0.2px] cursor-pointer flex items-center justify-center gap-2.5 overflow-hidden transition-all duration-[180ms] shadow-[0_4px_20px_rgba(26,122,138,0.35)] mt-1 [&_svg]:w-5 [&_svg]:h-5 [&_svg]:transition-transform [&_svg]:duration-200 before:content-[''] before:absolute before:top-0 before:-left-full before:w-full before:h-full before:bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent)] before:transition-[left] before:duration-500 hover:before:left-full hover:enabled:-translate-y-0.5 hover:enabled:shadow-[0_8px_28px_rgba(26,122,138,0.45)] hover:enabled:brightness-[1.08] active:enabled:translate-y-0 disabled:opacity-80 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <>
-                  <span className="spinner" />
+                  <span className="w-[18px] h-[18px] border-[2.5px] border-white/30 border-t-white rounded-full animate-spin" />
                   Signing in...
                 </>
               ) : (
@@ -200,10 +211,7 @@ function LoginPage() {
             </button>
           </form>
 
-
-
         </div>
-
       </div>
     </div>
   )
