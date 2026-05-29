@@ -7,6 +7,10 @@ import EyeOffIcon from './assets/icons/EyeOffIcon'
 import CheckCircleIcon from './assets/icons/CheckCircleIcon'
 import BarChartIcon from './assets/icons/BarChartIcon'
 import ArrowRightIcon from './assets/icons/ArrowRightIcon'
+import DocStethoIcon from './assets/icons/DocStethoIcon'
+import GoogleLogoIcon from './assets/icons/GoogleLogoIcon'
+import CheckIcon from './assets/icons/CheckIcon'
+
 
 interface LoginPageProps {
   onLoginSuccess: (user: { name: string; email: string; picture?: string }) => void
@@ -30,7 +34,7 @@ function LoginPage({ onLoginSuccess }: LoginPageProps) {
         .split(/[._-]/)
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ')
-      
+
       onLoginSuccess({
         name: displayName,
         email: email,
@@ -82,22 +86,7 @@ function LoginPage({ onLoginSuccess }: LoginPageProps) {
 
           {/* Logo mark */}
           <div className="w-24 h-24 bg-white/10 rounded-[24px] p-3.5 border border-white/15 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.2)] animate-[logoGrow_0.6s_cubic-bezier(0.34,1.56,0.64,1)_both]">
-            <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-              <circle cx="60" cy="60" r="52" stroke="#4DBFBF" strokeWidth="4" strokeDasharray="12 6" opacity="0.4" />
-              <circle cx="60" cy="60" r="42" stroke="#1A7A8A" strokeWidth="5" fill="none" />
-              <circle cx="60" cy="60" r="30" fill="#EDF8FA" />
-              <rect x="46" y="58" width="7" height="16" rx="1.5" fill="#1A7A8A" />
-              <rect x="56" y="50" width="7" height="24" rx="1.5" fill="#1A7A8A" />
-              <rect x="66" y="44" width="7" height="30" rx="1.5" fill="#4DBFBF" />
-              <polyline points="44,68 54,56 64,50 76,38" stroke="#4DBFBF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-              <polyline points="70,38 76,38 76,44" stroke="#4DBFBF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-              <rect x="56" y="68" width="8" height="16" rx="1" fill="white" />
-              <rect x="52" y="72" width="16" height="8" rx="1" fill="white" />
-              <path d="M36 44 Q28 44 28 52 Q28 60 36 60" stroke="#1A7A8A" strokeWidth="4" fill="none" strokeLinecap="round" />
-              <circle cx="36" cy="62" r="3" fill="#4DBFBF" />
-              <path d="M84 44 Q92 44 92 52 Q92 60 84 60" stroke="#1A7A8A" strokeWidth="4" fill="none" strokeLinecap="round" />
-              <circle cx="84" cy="62" r="3" fill="#4DBFBF" />
-            </svg>
+            <DocStethoIcon />
           </div>
 
           {/* Brand name */}
@@ -224,9 +213,7 @@ function LoginPage({ onLoginSuccess }: LoginPageProps) {
                 />
                 <span className={`w-[18px] h-[18px] min-w-[18px] rounded-[5px] border-[1.5px] flex items-center justify-center transition-all duration-200 ${rememberMe ? 'bg-[linear-gradient(135deg,#1A7A8A,#4DBFBF)] border-[#4DBFBF]' : 'border-gray-300 bg-white'}`}>
                   {rememberMe && (
-                    <svg width="10" height="7" viewBox="0 0 10 7" fill="none">
-                      <path d="M1 3.5L3.5 6L9 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
+                    <CheckIcon stroke="white" />
                   )}
                 </span>
                 <span>Remember me for 60 days</span>
@@ -268,13 +255,7 @@ function LoginPage({ onLoginSuccess }: LoginPageProps) {
             onClick={() => googleLogin()}
             className="w-full h-[48px] flex items-center justify-center gap-3 rounded-xl border-[1.5px] border-gray-200 bg-white text-[14px] font-semibold text-gray-700 transition-all duration-200 hover:border-[#4DBFBF] hover:shadow-[0_2px_12px_rgba(77,191,191,0.15)] hover:-translate-y-0.5 active:translate-y-0"
           >
-            {/* Google 'G' logo */}
-            <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
-              <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
-              <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
-              <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
-              <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
-            </svg>
+            <GoogleLogoIcon />
             Sign in with Google
           </button>
 
