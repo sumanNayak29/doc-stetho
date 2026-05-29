@@ -1,0 +1,122 @@
+[
+  {
+    "id": "D-101",
+    "name": "Dr. Gregory House",
+    "specialty": "Diagnostic Medicine",
+    "email": "g.house@docstetho.com",
+    "phone": "+1 (555) 019-2831",
+    "experience": 22,
+    "room": "Room 402",
+    "status": "Available",
+    "rating": 4.9,
+    "password": "[PASSWORD]"
+  },
+  {
+    "id": "D-102",
+    "name": "Dr. Helen Cho",
+    "specialty": "Genetics & Biotech",
+    "email": "h.cho@docstetho.com",
+    "phone": "+1 (555) 019-2832",
+    "experience": 14,
+    "room": "Room 305",
+    "status": "In Consultation",
+    "rating": 4.8,
+    "password": "[PASSWORD]"
+  },
+  {
+    "id": "D-103",
+    "name": "Dr. Stephen Strange",
+    "specialty": "Neurosurgery",
+    "email": "s.strange@docstetho.com",
+    "phone": "+1 (555) 019-2833",
+    "experience": 18,
+    "room": "Room 501",
+    "status": "On Break",
+    "rating": 4.9,
+    "password": "[PASSWORD]"
+  },
+  {
+    "id": "D-104",
+    "name": "Dr. Meredith Grey",
+    "specialty": "General Surgery",
+    "email": "m.grey@docstetho.com",
+    "phone": "+1 (555) 019-2834",
+    "experience": 15,
+    "room": "Room 204",
+    "status": "Available",
+    "rating": 4.7,
+    "password": "[PASSWORD]"
+  },
+  {
+    "id": "D-105",
+    "name": "Dr. Leonard McCoy",
+    "specialty": "Cardiothoracic Surgery",
+    "email": "l.mccoy@docstetho.com",
+    "phone": "+1 (555) 019-2835",
+    "experience": 20,
+    "room": "Room 301",
+    "status": "Off Duty",
+    "rating": 4.6,
+    "password": "[PASSWORD]"
+  },
+  {
+    "id": "D-106",
+    "name": "Dr. John Watson",
+    "specialty": "General Practice",
+    "email": "j.watson@docstetho.com",
+    "phone": "+1 (555) 019-2836",
+    "experience": 12,
+    "room": "Room 102",
+    "status": "Available",
+    "rating": 4.8,
+    "password": "[PASSWORD]"
+  },
+  {
+    "id": "D-107",
+    "name": "Dr. Michaela Quinn",
+    "specialty": "Family Medicine",
+    "email": "m.quinn@docstetho.com",
+    "phone": "+1 (555) 019-2837",
+    "experience": 16,
+    "room": "Room 105",
+    "status": "In Consultation",
+    "rating": 4.9,
+    "password": "[PASSWORD]"
+  },
+  {
+    "id": "D-108",
+    "name": "Dr. Christian Troy",
+    "specialty": "Plastic Surgery",
+    "email": "c.troy@docstetho.com",
+    "phone": "+1 (555) 019-2838",
+    "experience": 17,
+    "room": "Room 408",
+    "status": "On Break",
+    "rating": 4.5,
+    "password": "[PASSWORD]"
+  },
+  {
+    "id": "D-109",
+    "name": "Dr. Doogie Howser",
+    "specialty": "Pediatrics",
+    "email": "d.howser@docstetho.com",
+    "phone": "+1 (555) 019-2839",
+    "experience": 10,
+    "room": "Room 201",
+    "status": "Available",
+    "rating": 4.8,
+    "password": "[PASSWORD]"
+  },
+  {
+    "id": "D-110",
+    "name": "Dr. Dana Scully",
+    "specialty": "Pathology",
+    "email": "d.scully@docstetho.com",
+    "phone": "+1 (555) 019-2840",
+    "experience": 13,
+    "room": "Room 309",
+    "status": "Available",
+    "rating": 4.7,
+    "password": "[PASSWORD]"
+  }
+]
