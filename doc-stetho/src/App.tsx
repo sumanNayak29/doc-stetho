@@ -1,26 +1,23 @@
-import { useState } from 'react'
 import LoginPage from './LoginPage'
 import Dashboard from './Dashboard'
+import { useUserLoginData, type UserProfile } from '../store/userLoginData'
 
-interface UserProfile {
-  name: string
-  email: string
-  picture?: string
-}
+
 
 function App() {
-  const [user, setUser] = useState<UserProfile | null>(null)
+
+  const { userLoginData, setUserLoginData, clearUserLoginData } = useUserLoginData()
 
   const handleLoginSuccess = (profile: UserProfile) => {
-    setUser(profile)
+    setUserLoginData(profile)
   }
 
   const handleLogout = () => {
-    setUser(null)
+    clearUserLoginData()
   }
 
-  return user ? (
-    <Dashboard user={user} onLogout={handleLogout} />
+  return userLoginData ? (
+    <Dashboard user={userLoginData} onLogout={handleLogout} />
   ) : (
     <LoginPage onLoginSuccess={handleLoginSuccess} />
   )
