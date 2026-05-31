@@ -5,6 +5,8 @@ import BoltIcon from '../assets/icons/BoltIcon'
 import TempIcon from '../assets/icons/TempIcon'
 import VitalsCanvasChart from './VitalsCanvasChart'
 import StatusIndicator from './StatusIndicator'
+import StarIcon from '../assets/icons/StarIcon'
+import { usePatientsStore } from '../../store/patients'
 
 interface PatientDetailsPaneProps {
   patient: Patient
@@ -24,6 +26,7 @@ export default function PatientDetailsPane({
   setChartType
 }: PatientDetailsPaneProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const { priorityPatients, togglePriority } = usePatientsStore()
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -68,8 +71,19 @@ export default function PatientDetailsPane({
           </div>
         </div>
         <div className="flex-1 min-w-0 pr-6">
-          <div className="flex items-center gap-2 mb-0.5">
+          <div className="flex items-center gap-2 mb-0.5 flex-wrap">
             <h4 className="text-[17px] font-extrabold text-[#1B2D5E] leading-snug truncate">{patient.name}</h4>
+            <button
+              onClick={() => togglePriority(patient.id)}
+              className={`p-1 rounded-lg transition-all duration-150 cursor-pointer ${
+                priorityPatients[patient.id]
+                  ? 'text-amber-500 hover:scale-110'
+                  : 'text-gray-300 hover:text-amber-500 hover:scale-110'
+              }`}
+              title={priorityPatients[patient.id] ? "Remove from Priority" : "Mark as Priority"}
+            >
+              <StarIcon filled={priorityPatients[patient.id]} className="w-4 h-4" />
+            </button>
             <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold ${
               patient.status === 'Stable'
                 ? 'bg-emerald-100 text-emerald-700'

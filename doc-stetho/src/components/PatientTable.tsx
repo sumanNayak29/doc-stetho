@@ -4,6 +4,8 @@ import BoltIcon from '../assets/icons/BoltIcon'
 import TempIcon from '../assets/icons/TempIcon'
 import { type Patient } from '../types'
 import StatusIndicator from './StatusIndicator'
+import StarIcon from '../assets/icons/StarIcon'
+import { usePatientsStore } from '../../store/patients'
 
 interface PatientTableProps {
   loading: boolean
@@ -22,6 +24,8 @@ export default function PatientTable({
   handlePatientClick,
   patientPictures
 }: PatientTableProps) {
+  const { priorityPatients, togglePriority } = usePatientsStore()
+
   return (
     <table className="w-full border-collapse">
       <thead>
@@ -30,7 +34,7 @@ export default function PatientTable({
           <th className="pb-3 text-[12.5px] font-bold text-gray-400 uppercase tracking-wider">Condition</th>
           <th className="pb-3 text-[12.5px] font-bold text-gray-400 uppercase tracking-wider">Vitals</th>
           <th className="pb-3 text-[12.5px] font-bold text-gray-400 uppercase tracking-wider">Status</th>
-          <th className="pb-3 text-[12.5px] font-bold text-gray-400 uppercase tracking-wider text-right">Action</th>
+          <th className="pb-3 text-[12.5px] font-bold text-gray-400 uppercase tracking-wider text-right">Priority</th>
         </tr>
       </thead>
       <tbody className="divide-y divide-gray-50">
@@ -67,9 +71,14 @@ export default function PatientTable({
                     className="w-9 h-9 rounded-full object-cover border border-gray-200/80 shadow-sm shrink-0"
                   />
                   <div className="flex flex-col">
-                    <span className="text-[14px] font-bold text-[#1B2D5E] group-hover:text-[#1A7A8A] transition-colors">
-                      {patient.name}
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[14px] font-bold text-[#1B2D5E] group-hover:text-[#1A7A8A] transition-colors">
+                        {patient.name}
+                      </span>
+                      {priorityPatients[patient.id] && (
+                        <StarIcon filled={true} className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                      )}
+                    </div>
                     <span className="text-[11.5px] text-gray-400 font-medium">
                       {patient.id} • {patient.age} yrs • {patient.gender}
                     </span>
@@ -124,10 +133,21 @@ export default function PatientTable({
                 </span>
               </td>
 
-              {/* Action Button */}
+              {/* Priority Toggle Button */}
               <td className="py-4 text-right">
-                <button className="px-3.5 py-1.5 rounded-lg border border-gray-200 hover:border-[#1A7A8A] hover:bg-[#1A7A8A]/5 text-[12.5px] font-bold text-gray-500 hover:text-[#1A7A8A] transition-all duration-150 cursor-pointer">
-                  Record
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    togglePriority(patient.id)
+                  }}
+                  className={`p-2 rounded-xl border transition-all duration-200 cursor-pointer hover:scale-105 ${
+                    priorityPatients[patient.id]
+                      ? 'bg-amber-50 border-amber-200 text-amber-500 hover:bg-amber-100/80 shadow-sm shadow-amber-500/10'
+                      : 'border-gray-200/80 text-gray-300 hover:text-gray-400 hover:border-gray-300 hover:bg-gray-50/50'
+                  }`}
+                  title={priorityPatients[patient.id] ? "Remove from Priority" : "Mark as Priority"}
+                >
+                  <StarIcon filled={priorityPatients[patient.id]} className="w-4 h-4" />
                 </button>
               </td>
             </tr>
