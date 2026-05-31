@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import DocStethoIcon from './assets/icons/DocStethoIcon'
 import GridIcon from './assets/icons/GridIcon'
 import PatientsIcon from './assets/icons/PatientsIcon'
@@ -43,6 +43,642 @@ interface Patient {
   time: string
 }
 
+function VitalsCanvasChart({ patient, chartType }: { patient: Patient; chartType: 'heartRate' | 'temp' }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [hoverIndex, setHoverIndex] = useState<number | null>(null)
+
+  const getVitalsHistory = (p: Patient, type: 'heartRate' | 'temp') => {
+    const currentVal = type === 'heartRate' ? p.vitals.heartRate : p.vitals.temp
+    const seed = p.id.charCodeAt(3) || 10
+    if (type === 'heartRate') {
+      return [
+        currentVal - 4 - (seed % 3),
+        currentVal + 2 + (seed % 4),
+        currentVal - 2 + (seed % 2),
+        currentVal + 5 - (seed % 5),
+        currentVal - 1 + (seed % 3),
+        currentVal
+      ]
+    } else {
+      return [
+        currentVal - 0.4 - ((seed % 3) / 10),
+        currentVal + 0.2 + ((seed % 4) / 10),
+        currentVal - 0.2 + ((seed % 2) / 10),
+        currentVal + 0.5 - ((seed % 5) / 10),
+        currentVal - 0.1 + ((seed % 3) / 10),
+        currentVal
+      ]
+    }
+  }
+
+  const history = getVitalsHistory(patient, chartType)
+  const minVal = Math.min(...history) - (chartType === 'heartRate' ? 5 : 0.5)
+  const maxVal = Math.max(...history) + (chartType === 'heartRate' ? 5 : 0.5)
+  const strokeColor = chartType === 'heartRate' ? '#E11D48' : '#D97706'
+  const labels = ['12h ago', '9h ago', '6h ago', '3h ago', '1h ago', 'Current']
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    let animationId: number
+
+    const render = () => {
+      const rect = canvas.getBoundingClientRect()
+      const dpr = window.devicePixelRatio || 1
+
+      canvas.width = rect.width * dpr
+      canvas.height = rect.height * dpr
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      ctx.scale(dpr, dpr)
+
+      const width = rect.width
+      const height = rect.height
+
+      const paddingLeft = 40
+      const paddingRight = 20
+      const paddingTop = 20
+      const paddingBottom = 30
+      const chartWidth = width - paddingLeft - paddingRight
+      const chartHeight = height - paddingTop - paddingBottom
+
+      const getX = (idx: number) => paddingLeft + idx * (chartWidth / 5)
+      const getY = (val: number) => {
+        const ratio = (val - minVal) / (maxVal - minVal)
+        return height - paddingBottom - ratio * chartHeight
+      }
+
+      // Draw grid lines
+      ctx.lineWidth = 1
+      ctx.strokeStyle = '#E2E8F0'
+      ctx.setLineDash([4, 4])
+      ctx.font = '600 10px sans-serif'
+      ctx.fillStyle = '#94A3B8'
+      ctx.textAlign = 'right'
+      ctx.textBaseline = 'middle'
+
+      const ratios = [0, 0.5, 1]
+      ratios.forEach(ratio => {
+        const yVal = height - paddingBottom - ratio * chartHeight
+        const displayVal = minVal + ratio * (maxVal - minVal)
+
+        ctx.beginPath()
+        ctx.moveTo(paddingLeft, yVal)
+        ctx.lineTo(width - paddingRight, yVal)
+        ctx.stroke()
+
+        ctx.setLineDash([])
+        const labelText = chartType === 'heartRate' ? Math.round(displayVal).toString() : displayVal.toFixed(1)
+        ctx.fillText(labelText, paddingLeft - 10, yVal)
+        ctx.setLineDash([4, 4])
+      })
+
+      ctx.setLineDash([])
+
+      // Draw X axis labels
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'top'
+      labels.forEach((label, idx) => {
+        const xVal = getX(idx)
+        ctx.fillText(label, xVal, height - paddingBottom + 10)
+      })
+
+      // Draw filled area under curve
+      if (history.length > 0) {
+        const areaGrad = ctx.createLinearGradient(0, paddingTop, 0, height - paddingBottom)
+        if (chartType === 'heartRate') {
+          areaGrad.addColorStop(0, 'rgba(225, 29, 72, 0.25)')
+          areaGrad.addColorStop(1, 'rgba(225, 29, 72, 0.00)')
+        } else {
+          areaGrad.addColorStop(0, 'rgba(217, 119, 6, 0.25)')
+          areaGrad.addColorStop(1, 'rgba(217, 119, 6, 0.00)')
+        }
+
+        ctx.beginPath()
+        ctx.moveTo(getX(0), getY(history[0]))
+        for (let i = 1; i < history.length; i++) {
+          ctx.lineTo(getX(i), getY(history[i]))
+        }
+        ctx.lineTo(getX(history.length - 1), height - paddingBottom)
+        ctx.lineTo(getX(0), height - paddingBottom)
+        ctx.closePath()
+        ctx.fillStyle = areaGrad
+        ctx.fill()
+
+        // Draw line curve
+        ctx.beginPath()
+        ctx.moveTo(getX(0), getY(history[0]))
+        for (let i = 1; i < history.length; i++) {
+          ctx.lineTo(getX(i), getY(history[i]))
+        }
+        ctx.lineWidth = 2.5
+        ctx.strokeStyle = strokeColor
+        ctx.lineCap = 'round'
+        ctx.lineJoin = 'round'
+        ctx.stroke()
+
+        // Draw dots
+        history.forEach((val, idx) => {
+          const cx = getX(idx)
+          const cy = getY(idx === 5 ? (chartType === 'heartRate' ? patient.vitals.heartRate : patient.vitals.temp) : val)
+
+          // Outer pulse glow if hovered
+          if (hoverIndex === idx) {
+            ctx.beginPath()
+            ctx.arc(cx, cy, 8, 0, 2 * Math.PI)
+            ctx.fillStyle = chartType === 'heartRate' ? 'rgba(225, 29, 72, 0.15)' : 'rgba(217, 119, 6, 0.15)'
+            ctx.fill()
+          }
+
+          ctx.beginPath()
+          ctx.arc(cx, cy, 4, 0, 2 * Math.PI)
+          ctx.fillStyle = strokeColor
+          ctx.strokeStyle = '#FFFFFF'
+          ctx.lineWidth = 1.5
+          ctx.fill()
+          ctx.stroke()
+        })
+
+        // Draw tooltip if hovered
+        if (hoverIndex !== null) {
+          const cx = getX(hoverIndex)
+          const cy = getY(hoverIndex === 5 ? (chartType === 'heartRate' ? patient.vitals.heartRate : patient.vitals.temp) : history[hoverIndex])
+          const valueVal = hoverIndex === 5 ? (chartType === 'heartRate' ? patient.vitals.heartRate : patient.vitals.temp) : history[hoverIndex]
+          const unit = chartType === 'heartRate' ? ' bpm' : '°F'
+          const text = `${labels[hoverIndex]}: ${chartType === 'heartRate' ? Math.round(valueVal) : valueVal.toFixed(1)}${unit}`
+
+          ctx.font = 'bold 11px sans-serif'
+          const textWidth = ctx.measureText(text).width
+          const tooltipWidth = textWidth + 16
+          const tooltipHeight = 24
+          const tooltipX = Math.max(paddingLeft, Math.min(width - paddingRight - tooltipWidth, cx - tooltipWidth / 2))
+          const tooltipY = Math.max(paddingTop, cy - tooltipHeight - 10)
+
+          ctx.fillStyle = 'rgba(27, 45, 94, 0.95)'
+          ctx.beginPath()
+          const radius = 6
+          if (ctx.roundRect) {
+            ctx.roundRect(tooltipX, tooltipY, tooltipWidth, tooltipHeight, radius)
+          } else {
+            ctx.rect(tooltipX, tooltipY, tooltipWidth, tooltipHeight)
+          }
+          ctx.fill()
+
+          ctx.fillStyle = '#FFFFFF'
+          ctx.textAlign = 'left'
+          ctx.textBaseline = 'middle'
+          ctx.fillText(text, tooltipX + 8, tooltipY + tooltipHeight / 2)
+        }
+      }
+    }
+
+    const resizeObserver = new ResizeObserver(() => {
+      animationId = requestAnimationFrame(render)
+    })
+
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current)
+    }
+
+    render()
+
+    return () => {
+      resizeObserver.disconnect()
+      cancelAnimationFrame(animationId)
+    }
+  }, [hoverIndex, patient, chartType, history, minVal, maxVal, strokeColor])
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const rect = canvas.getBoundingClientRect()
+    const x = e.clientX - rect.left
+
+    const paddingLeft = 40
+    const paddingRight = 20
+    const chartWidth = rect.width - paddingLeft - paddingRight
+    const getX = (idx: number) => paddingLeft + idx * (chartWidth / 5)
+
+    let foundIdx: number | null = null
+    for (let i = 0; i < history.length; i++) {
+      const cx = getX(i)
+      const dist = Math.abs(x - cx)
+      if (dist < 20) {
+        foundIdx = i
+        break
+      }
+    }
+
+    if (foundIdx !== hoverIndex) {
+      setHoverIndex(foundIdx)
+    }
+  }
+
+  const handleMouseLeave = () => {
+    setHoverIndex(null)
+  }
+
+  return (
+    <div ref={containerRef} className="w-full relative h-[180px]">
+      <canvas
+        ref={canvasRef}
+        className="w-full h-full block cursor-pointer"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+      />
+    </div>
+  )
+}
+
+function AdmissionsCanvasChart() {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [hoverIndex, setHoverIndex] = useState<number | null>(null)
+
+  const admissionsData = [12, 19, 15, 22, 18, 9, 14]
+  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+  const maxAdmission = 25
+  const strokeColor = '#1A7A8A'
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    let animationId: number
+
+    const render = () => {
+      const rect = canvas.getBoundingClientRect()
+      const dpr = window.devicePixelRatio || 1
+      
+      canvas.width = rect.width * dpr
+      canvas.height = rect.height * dpr
+      
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      ctx.scale(dpr, dpr)
+
+      const width = rect.width
+      const height = rect.height
+
+      const padLeft = 40
+      const padRight = 20
+      const padTop = 20
+      const padBottom = 30
+      const cWidth = width - padLeft - padRight
+      const cHeight = height - padTop - padBottom
+
+      const getX = (idx: number) => padLeft + idx * (cWidth / 6)
+      const getY = (val: number) => height - padBottom - (val / maxAdmission) * cHeight
+
+      // Draw grid lines
+      ctx.lineWidth = 1
+      ctx.strokeStyle = '#E2E8F0'
+      ctx.setLineDash([4, 4])
+      ctx.font = '600 10px sans-serif'
+      ctx.fillStyle = '#94A3B8'
+      ctx.textAlign = 'right'
+      ctx.textBaseline = 'middle'
+
+      const ratios = [0, 0.25, 0.5, 0.75, 1]
+      ratios.forEach(ratio => {
+        const yVal = height - padBottom - ratio * cHeight
+        const displayVal = Math.round(ratio * maxAdmission)
+        
+        ctx.beginPath()
+        ctx.moveTo(padLeft, yVal)
+        ctx.lineTo(width - padRight, yVal)
+        ctx.stroke()
+
+        ctx.setLineDash([])
+        ctx.fillText(displayVal.toString(), padLeft - 10, yVal)
+        ctx.setLineDash([4, 4])
+      })
+
+      ctx.setLineDash([])
+
+      // Draw X axis days
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'top'
+      days.forEach((day, idx) => {
+        const xVal = getX(idx)
+        ctx.fillText(day, xVal, height - padBottom + 10)
+      })
+
+      // Draw filled area under curve
+      if (admissionsData.length > 0) {
+        const areaGrad = ctx.createLinearGradient(0, padTop, 0, height - padBottom)
+        areaGrad.addColorStop(0, 'rgba(26, 122, 138, 0.25)')
+        areaGrad.addColorStop(1, 'rgba(26, 122, 138, 0.00)')
+
+        ctx.beginPath()
+        ctx.moveTo(getX(0), getY(admissionsData[0]))
+        for (let i = 1; i < admissionsData.length; i++) {
+          ctx.lineTo(getX(i), getY(admissionsData[i]))
+        }
+        ctx.lineTo(getX(admissionsData.length - 1), height - padBottom)
+        ctx.lineTo(getX(0), height - padBottom)
+        ctx.closePath()
+        ctx.fillStyle = areaGrad
+        ctx.fill()
+
+        // Draw line curve
+        ctx.beginPath()
+        ctx.moveTo(getX(0), getY(admissionsData[0]))
+        for (let i = 1; i < admissionsData.length; i++) {
+          ctx.lineTo(getX(i), getY(admissionsData[i]))
+        }
+        ctx.lineWidth = 3
+        ctx.strokeStyle = strokeColor
+        ctx.lineCap = 'round'
+        ctx.lineJoin = 'round'
+        ctx.stroke()
+
+        // Draw dots
+        admissionsData.forEach((val, idx) => {
+          const cx = getX(idx)
+          const cy = getY(val)
+
+          // Outer pulse glow if hovered
+          if (hoverIndex === idx) {
+            ctx.beginPath()
+            ctx.arc(cx, cy, 8, 0, 2 * Math.PI)
+            ctx.fillStyle = 'rgba(26, 122, 138, 0.15)'
+            ctx.fill()
+          }
+
+          ctx.beginPath()
+          ctx.arc(cx, cy, 4, 0, 2 * Math.PI)
+          ctx.fillStyle = strokeColor
+          ctx.strokeStyle = '#FFFFFF'
+          ctx.lineWidth = 1.5
+          ctx.fill()
+          ctx.stroke()
+        })
+
+        // Draw tooltip if hovered
+        if (hoverIndex !== null) {
+          const cx = getX(hoverIndex)
+          const cy = getY(admissionsData[hoverIndex])
+          const text = `${days[hoverIndex]}: ${admissionsData[hoverIndex]} admissions`
+
+          ctx.font = 'bold 11px sans-serif'
+          const textWidth = ctx.measureText(text).width
+          const tooltipWidth = textWidth + 16
+          const tooltipHeight = 24
+          const tooltipX = Math.max(padLeft, Math.min(width - padRight - tooltipWidth, cx - tooltipWidth / 2))
+          const tooltipY = Math.max(padTop, cy - tooltipHeight - 10)
+
+          ctx.fillStyle = 'rgba(27, 45, 94, 0.95)'
+          ctx.beginPath()
+          const radius = 6
+          if (ctx.roundRect) {
+            ctx.roundRect(tooltipX, tooltipY, tooltipWidth, tooltipHeight, radius)
+          } else {
+            ctx.rect(tooltipX, tooltipY, tooltipWidth, tooltipHeight)
+          }
+          ctx.fill()
+
+          ctx.fillStyle = '#FFFFFF'
+          ctx.textAlign = 'left'
+          ctx.textBaseline = 'middle'
+          ctx.fillText(text, tooltipX + 8, tooltipY + tooltipHeight / 2)
+        }
+      }
+    }
+
+    const resizeObserver = new ResizeObserver(() => {
+      animationId = requestAnimationFrame(render)
+    })
+
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current)
+    }
+
+    render()
+
+    return () => {
+      resizeObserver.disconnect()
+      cancelAnimationFrame(animationId)
+    }
+  }, [hoverIndex])
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const rect = canvas.getBoundingClientRect()
+    const x = e.clientX - rect.left
+
+    const padLeft = 40
+    const padRight = 20
+    const cWidth = rect.width - padLeft - padRight
+    const getX = (idx: number) => padLeft + idx * (cWidth / 6)
+
+    let foundIdx: number | null = null
+    for (let i = 0; i < admissionsData.length; i++) {
+      const cx = getX(i)
+      const dist = Math.abs(x - cx)
+      if (dist < 20) {
+        foundIdx = i
+        break
+      }
+    }
+
+    if (foundIdx !== hoverIndex) {
+      setHoverIndex(foundIdx)
+    }
+  }
+
+  const handleMouseLeave = () => {
+    setHoverIndex(null)
+  }
+
+  return (
+    <div ref={containerRef} className="w-full relative h-[180px]">
+      <canvas
+        ref={canvasRef}
+        className="w-full h-full block cursor-pointer"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+      />
+    </div>
+  )
+}
+
+function ConditionsCanvasChart({ patientsList }: { patientsList: Patient[] }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [hoverIndex, setHoverIndex] = useState<number | null>(null)
+
+  const conditionCounts: Record<string, number> = {}
+  patientsList.forEach(p => {
+    conditionCounts[p.condition] = (conditionCounts[p.condition] || 0) + 1
+  })
+  const sortedConditions = Object.entries(conditionCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+
+  const totalPatients = patientsList.length || 1
+  const maxCount = sortedConditions.length > 0 ? sortedConditions[0][1] : 1
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    let animationId: number
+
+    const render = () => {
+      const rect = canvas.getBoundingClientRect()
+      const dpr = window.devicePixelRatio || 1
+
+      canvas.width = rect.width * dpr
+      canvas.height = rect.height * dpr
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      ctx.scale(dpr, dpr)
+
+      const width = rect.width
+      const height = rect.height
+
+      if (sortedConditions.length === 0) {
+        ctx.fillStyle = '#94A3B8'
+        ctx.font = '500 13px sans-serif'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText('No patient data available.', width / 2, height / 2)
+        return
+      }
+
+      const padLeft = 15
+      const padRight = 15
+      const padTop = 10
+      const padBottom = 10
+      const usableHeight = height - padTop - padBottom
+      const rowCount = sortedConditions.length
+      const rowHeight = usableHeight / rowCount
+
+      sortedConditions.forEach(([condition, count], idx) => {
+        const percentage = ((count / totalPatients) * 100).toFixed(1)
+        const barMaxWidth = width - padLeft - padRight
+        const barWidth = (count / maxCount) * barMaxWidth
+        const rowY = padTop + idx * rowHeight
+        
+        // Hover state background highlight
+        if (hoverIndex === idx) {
+          ctx.fillStyle = 'rgba(241, 245, 249, 0.6)'
+          ctx.beginPath()
+          const r = 8
+          if (ctx.roundRect) {
+            ctx.roundRect(padLeft - 5, rowY + 2, barMaxWidth + 10, rowHeight - 4, r)
+          } else {
+            ctx.rect(padLeft - 5, rowY + 2, barMaxWidth + 10, rowHeight - 4)
+          }
+          ctx.fill()
+        }
+
+        // Draw Text labels: Condition Name (top-left of row) & Count/Percentage (top-right of row)
+        ctx.font = 'bold 12px sans-serif'
+        ctx.fillStyle = '#1B2D5E'
+        ctx.textAlign = 'left'
+        ctx.textBaseline = 'top'
+        ctx.fillText(condition, padLeft, rowY + 6)
+
+        ctx.font = '600 11px sans-serif'
+        ctx.fillStyle = '#94A3B8'
+        ctx.textAlign = 'right'
+        ctx.fillText(`${count} patients (${percentage}%)`, width - padRight, rowY + 7)
+
+        // Draw track bar background
+        const barY = rowY + 24
+        const barH = 10
+        ctx.fillStyle = '#F1F5F9'
+        ctx.beginPath()
+        if (ctx.roundRect) {
+          ctx.roundRect(padLeft, barY, barMaxWidth, barH, 5)
+        } else {
+          ctx.rect(padLeft, barY, barMaxWidth, barH)
+        }
+        ctx.fill()
+
+        // Draw active gradient bar
+        const gradient = ctx.createLinearGradient(padLeft, 0, padLeft + barWidth, 0)
+        gradient.addColorStop(0, '#1A7A8A')
+        gradient.addColorStop(1, '#4DBFBF')
+        ctx.fillStyle = gradient
+        
+        ctx.beginPath()
+        if (ctx.roundRect) {
+          ctx.roundRect(padLeft, barY, barWidth, barH, 5)
+        } else {
+          ctx.rect(padLeft, barY, barWidth, barH)
+        }
+        ctx.fill()
+      })
+    }
+
+    const resizeObserver = new ResizeObserver(() => {
+      animationId = requestAnimationFrame(render)
+    })
+
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current)
+    }
+
+    render()
+
+    return () => {
+      resizeObserver.disconnect()
+      cancelAnimationFrame(animationId)
+    }
+  }, [sortedConditions, hoverIndex, patientsList, totalPatients, maxCount])
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const rect = canvas.getBoundingClientRect()
+    const y = e.clientY - rect.top
+
+    const padTop = 10
+    const usableHeight = rect.height - 20
+    const rowCount = sortedConditions.length
+    if (rowCount === 0) return
+    const rowHeight = usableHeight / rowCount
+
+    const idx = Math.floor((y - padTop) / rowHeight)
+    if (idx >= 0 && idx < rowCount) {
+      if (idx !== hoverIndex) {
+        setHoverIndex(idx)
+      }
+    } else {
+      setHoverIndex(null)
+    }
+  }
+
+  const handleMouseLeave = () => {
+    setHoverIndex(null)
+  }
+
+  return (
+    <div ref={containerRef} className="w-full h-[180px]">
+      <canvas
+        ref={canvasRef}
+        className="w-full h-full block cursor-pointer"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+      />
+    </div>
+  )
+}
+
 function Dashboard({ user, onLogout }: DashboardProps) {
   const [activeTab, setActiveTab] = useState('Overview')
   const [searchQuery, setSearchQuery] = useState('')
@@ -50,6 +686,201 @@ function Dashboard({ user, onLogout }: DashboardProps) {
   const [patients, setPatients] = useState<Patient[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null)
+  const [chartType, setChartType] = useState<'heartRate' | 'temp'>('heartRate')
+  const [patientPictures, setPatientPictures] = useState<Record<string, string>>(() => {
+    try {
+      const saved = localStorage.getItem('docstetho_patient_avatars')
+      return saved ? JSON.parse(saved) : {}
+    } catch {
+      return {}
+    }
+  })
+
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handlePictureChange = (patientId: string, base64: string) => {
+    const updated = { ...patientPictures, [patientId]: base64 }
+    setPatientPictures(updated)
+    try {
+      localStorage.setItem('docstetho_patient_avatars', JSON.stringify(updated))
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const handlePatientClick = (patient: Patient) => {
+    setSelectedPatient(patient)
+    setActiveTab('Patients')
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file && selectedPatient) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        if (typeof reader.result === 'string') {
+          handlePictureChange(selectedPatient.id, reader.result)
+        }
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const onAvatarClick = () => {
+    fileInputRef.current?.click()
+  }
+
+  const renderVitalsChart = (patient: Patient) => {
+    return (
+      <div className="flex flex-col gap-2">
+        <div className="flex justify-between items-center mb-1">
+          <span className="text-[11px] text-gray-400 font-bold uppercase tracking-wider">Metric Timeline (12h)</span>
+          <div className="flex gap-1 bg-gray-100 p-0.5 rounded-lg border border-gray-200/50">
+            <button
+              onClick={(e) => { e.stopPropagation(); setChartType('heartRate'); }}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
+                chartType === 'heartRate' ? 'bg-white text-red-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Heart Rate
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); setChartType('temp'); }}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
+                chartType === 'temp' ? 'bg-white text-amber-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Temperature
+            </button>
+          </div>
+        </div>
+        <div className="relative bg-gray-50/50 rounded-xl border border-gray-100 p-2.5">
+          <VitalsCanvasChart patient={patient} chartType={chartType} />
+        </div>
+      </div>
+    )
+  }
+
+  const renderPatientDetailsPane = (patient: Patient) => {
+    const avatarSrc = patientPictures[patient.id] || `https://i.pravatar.cc/150?u=${patient.id}`
+    return (
+      <div className="bg-white/80 backdrop-blur-xl border border-white/60 rounded-2xl p-6 shadow-[0_4px_24px_rgba(27,45,94,0.02)] flex flex-col gap-6 w-full animate-[cardIn_0.3s_ease_both]">
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          className="hidden"
+          accept="image/*"
+        />
+        <div className="flex items-center gap-4 border-b border-gray-100 pb-5 relative">
+          <div className="relative group/avatar cursor-pointer shrink-0" onClick={onAvatarClick}>
+            <img
+              src={avatarSrc}
+              alt={patient.name}
+              className="w-18 h-18 rounded-full object-cover border-2 border-[#1A7A8A] shadow-md transition-all duration-200 group-hover/avatar:brightness-[0.7]"
+            />
+            <div className="absolute inset-0 rounded-full flex items-center justify-center bg-black/40 opacity-0 group-hover/avatar:opacity-100 transition-opacity duration-200">
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </div>
+          </div>
+          <div className="flex-1 min-w-0 pr-6">
+            <div className="flex items-center gap-2 mb-0.5">
+              <h4 className="text-[17px] font-extrabold text-[#1B2D5E] leading-snug truncate">{patient.name}</h4>
+              <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
+                patient.status === 'Stable'
+                  ? 'bg-emerald-100 text-emerald-700'
+                  : patient.status === 'Critical'
+                    ? 'bg-red-100 text-red-700 animate-pulse'
+                    : 'bg-[#EDF3F8] text-[#1A7A8A]'
+              }`}>
+                {patient.status}
+              </span>
+            </div>
+            <p className="text-xs text-gray-400 font-semibold">{patient.id} • {patient.gender} • {patient.age} years</p>
+            <button
+              onClick={onAvatarClick}
+              className="text-[11.5px] font-bold text-[#1A7A8A] hover:text-[#4DBFBF] transition-colors mt-2 cursor-pointer flex items-center gap-1.5"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
+              Change Photo
+            </button>
+          </div>
+          <button
+            onClick={() => setSelectedPatient(null)}
+            className="absolute top-0 right-0 p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600 cursor-pointer"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="bg-gray-50/50 rounded-xl p-3.5 border border-gray-100">
+            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Condition / Diagnosis</span>
+            <p className="text-[13.5px] font-bold text-[#1B2D5E] mt-1 leading-snug">{patient.condition}</p>
+          </div>
+          <div className="bg-gray-50/50 rounded-xl p-3.5 border border-gray-100">
+            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Checked In At</span>
+            <p className="text-[13.5px] font-bold text-[#1B2D5E] mt-1 leading-snug">{patient.time} today</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-3 gap-3 bg-gray-50/30 border border-gray-100 rounded-xl p-3">
+          <div className="flex flex-col items-center text-center p-1">
+            <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider mb-1 flex items-center gap-1">
+              <HeartIcon className="w-3 h-3 text-red-500" /> Pulse
+            </span>
+            <span className="text-[14px] font-extrabold text-[#1B2D5E]">{patient.vitals.heartRate} <span className="text-[10px] font-semibold text-gray-400">bpm</span></span>
+          </div>
+          <div className="flex flex-col items-center text-center p-1 border-x border-gray-200/60">
+            <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider mb-1 flex items-center gap-1">
+              <BoltIcon className="w-3 h-3 text-blue-500" /> Pressure
+            </span>
+            <span className="text-[14px] font-extrabold text-[#1B2D5E]">{patient.vitals.bloodPressure}</span>
+          </div>
+          <div className="flex flex-col items-center text-center p-1">
+            <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider mb-1 flex items-center gap-1">
+              <TempIcon className="w-3 h-3 text-orange-500" /> Temp
+            </span>
+            <span className="text-[14px] font-extrabold text-[#1B2D5E]">{patient.vitals.temp} <span className="text-[10px] font-semibold text-gray-400">°F</span></span>
+          </div>
+        </div>
+        {renderVitalsChart(patient)}
+      </div>
+    )
+  }
+
+  const renderAnalyticsCharts = () => {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-2">
+        <div className="bg-white/80 backdrop-blur-xl border border-white/60 rounded-2xl p-6 shadow-[0_4px_24px_rgba(27,45,94,0.02)] flex flex-col gap-4">
+          <div>
+            <h4 className="text-[16px] font-bold text-[#1B2D5E] mb-1">Weekly Admissions Trend</h4>
+            <p className="text-xs text-gray-400 font-medium">Daily statistics of new patient check-ins</p>
+          </div>
+          <div className="relative bg-gray-50/50 rounded-xl border border-gray-100 p-4">
+            <AdmissionsCanvasChart />
+          </div>
+        </div>
+        <div className="bg-white/80 backdrop-blur-xl border border-white/60 rounded-2xl p-6 shadow-[0_4px_24px_rgba(27,45,94,0.02)] flex flex-col gap-4">
+          <div>
+            <h4 className="text-[16px] font-bold text-[#1B2D5E] mb-1">Top Patient Conditions</h4>
+            <p className="text-xs text-gray-400 font-medium">Distribution breakdown based on active medical records</p>
+          </div>
+          <div className="relative bg-gray-50/50 rounded-xl border border-gray-100 p-4 flex flex-col justify-center flex-1">
+            <ConditionsCanvasChart patientsList={patients} />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   useEffect(() => {
     const controller = new AbortController();
 
@@ -123,16 +954,27 @@ function Dashboard({ user, onLogout }: DashboardProps) {
             </tr>
           ) : filteredPatients.length > 0 ? (
             filteredPatients.map(patient => (
-              <tr key={patient.id} className="group hover:bg-gray-50/50 transition-colors duration-150">
-                {/* ID & Name */}
+              <tr
+                key={patient.id}
+                onClick={() => handlePatientClick(patient)}
+                className={`group hover:bg-gray-50/50 transition-colors duration-150 cursor-pointer ${selectedPatient?.id === patient.id ? 'bg-[#1A7A8A]/10 hover:bg-[#1A7A8A]/15' : ''}`}
+              >
+                {/* ID & Name with Avatar */}
                 <td className="py-4">
-                  <div className="flex flex-col">
-                    <span className="text-[14px] font-bold text-[#1B2D5E] group-hover:text-[#1A7A8A] transition-colors">
-                      {patient.name}
-                    </span>
-                    <span className="text-[11.5px] text-gray-400 font-medium">
-                      {patient.id} • {patient.age} yrs • {patient.gender}
-                    </span>
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={patientPictures[patient.id] || `https://i.pravatar.cc/100?u=${patient.id}`}
+                      alt={patient.name}
+                      className="w-9 h-9 rounded-full object-cover border border-gray-200/80 shadow-sm shrink-0"
+                    />
+                    <div className="flex flex-col">
+                      <span className="text-[14px] font-bold text-[#1B2D5E] group-hover:text-[#1A7A8A] transition-colors">
+                        {patient.name}
+                      </span>
+                      <span className="text-[11.5px] text-gray-400 font-medium">
+                        {patient.id} • {patient.age} yrs • {patient.gender}
+                      </span>
+                    </div>
                   </div>
                 </td>
 
@@ -421,30 +1263,40 @@ function Dashboard({ user, onLogout }: DashboardProps) {
           )}
 
           {activeTab === 'Patients' && (
-            <div className="bg-white/80 backdrop-blur-xl border border-white/60 rounded-2xl p-6 shadow-[0_4px_24px_rgba(27,45,94,0.02)] flex flex-col gap-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-4">
-                <div>
-                  <h3 className="text-[20px] font-extrabold text-[#1B2D5E] tracking-tight mb-1">Patient Directory</h3>
-                  <p className="text-[13px] text-gray-400 font-medium">Viewing all patient records in the database</p>
+            <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start w-full">
+              {/* Left Column: Patient List Directory */}
+              <div className={`${selectedPatient ? 'xl:col-span-7' : 'xl:col-span-12'} bg-white/80 backdrop-blur-xl border border-white/60 rounded-2xl p-6 shadow-[0_4px_24px_rgba(27,45,94,0.02)] flex flex-col gap-6 transition-all duration-300 w-full`}>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-4">
+                  <div>
+                    <h3 className="text-[20px] font-extrabold text-[#1B2D5E] tracking-tight mb-1">Patient Directory</h3>
+                    <p className="text-[13px] text-gray-400 font-medium">Viewing all patient records in the database</p>
+                  </div>
+                  <div className="relative">
+                    <span className="absolute left-3 text-gray-400 top-1/2 -translate-y-1/2">
+                      <SearchIcon />
+                    </span>
+                    <input
+                      type="text"
+                      placeholder="Search patients by name, condition, or ID..."
+                      value={searchQuery}
+                      onChange={e => setSearchQuery(e.target.value)}
+                      className="w-full sm:w-64 h-[38px] pl-9 pr-3 rounded-xl border border-gray-200 bg-[#EDF3F8]/30 text-sm text-[#1B2D5E] placeholder-gray-400 focus:outline-none focus:border-[#4DBFBF] focus:bg-white transition-all duration-200"
+                    />
+                  </div>
                 </div>
-                <div className="relative">
-                  <span className="absolute left-3 text-gray-400 top-1/2 -translate-y-1/2">
-                    <SearchIcon />
-                  </span>
-                  <input
-                    type="text"
-                    placeholder="Search patients by name, condition, or ID..."
-                    value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
-                    className="w-full sm:w-80 h-[38px] pl-9 pr-3 rounded-xl border border-gray-200 bg-[#EDF3F8]/30 text-sm text-[#1B2D5E] placeholder-gray-400 focus:outline-none focus:border-[#4DBFBF] focus:bg-white transition-all duration-200"
-                  />
+
+                {/* Patient Table */}
+                <div className="overflow-x-auto">
+                  {renderPatientTable()}
                 </div>
               </div>
 
-              {/* Patient Table */}
-              <div className="overflow-x-auto">
-                {renderPatientTable()}
-              </div>
+              {/* Right Column: Selected Patient Details (Full info, Custom Pic, Vitals Chart) */}
+              {selectedPatient && (
+                <div className="xl:col-span-5 w-full">
+                  {renderPatientDetailsPane(selectedPatient)}
+                </div>
+              )}
             </div>
           )}
 
@@ -497,6 +1349,7 @@ function Dashboard({ user, onLogout }: DashboardProps) {
                   <span className="text-xs text-[#1A7A8A] font-bold">Based on 320 feedback entries</span>
                 </div>
               </div>
+              {renderAnalyticsCharts()}
             </div>
           )}
 
