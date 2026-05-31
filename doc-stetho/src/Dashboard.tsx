@@ -13,6 +13,7 @@ import PatientTable from './components/PatientTable'
 import PatientDetailsPane from './components/PatientDetailsPane'
 import { useAppointmentsStore } from '../store/appointments'
 import StatusIndicator from './components/StatusIndicator'
+import { usePatientsStore } from '../store/patients'
 
 interface DashboardProps {
   user: UserProfile
@@ -31,6 +32,11 @@ function Dashboard({ user, onLogout }: DashboardProps) {
   const [chartType, setChartType] = useState<'heartRate' | 'temp'>('heartRate')
   const { appointmentStatuses, setAppointmentStatus } = useAppointmentsStore()
   const [selectedApptId, setSelectedApptId] = useState<string | null>(null)
+  const { priorityPatients } = usePatientsStore()
+  const [statusFilter, setStatusFilter] = useState<string>('All')
+  const [priorityFilter, setPriorityFilter] = useState<string>('All')
+  const [genderFilter, setGenderFilter] = useState<string>('All')
+  const [sortBy, setSortBy] = useState<string>('default')
   const [patientPictures, setPatientPictures] = useState<Record<string, string>>(() => {
     try {
       const saved = localStorage.getItem('docstetho_patient_avatars')
@@ -79,11 +85,53 @@ function Dashboard({ user, onLogout }: DashboardProps) {
     return () => controller.abort();
   }, []);
 
-  const filteredPatients = patients.filter(p =>
-    p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.condition.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.id.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  // Filter & Sort patient list
+  const filteredPatients = (() => {
+    // 1. Search filter
+    let result = patients.filter(p =>
+      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.condition.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.id.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+
+    // 2. Status filter
+    if (statusFilter !== 'All') {
+      result = result.filter(p => p.status === statusFilter)
+    }
+
+    // 3. Priority filter
+    if (priorityFilter === 'Priority') {
+      result = result.filter(p => priorityPatients[p.id])
+    }
+
+    // 4. Gender filter
+    if (genderFilter !== 'All') {
+      result = result.filter(p => p.gender === genderFilter)
+    }
+
+    // 5. Sorting
+    result = [...result].sort((a, b) => {
+      if (sortBy === 'name-asc') {
+        return a.name.localeCompare(b.name)
+      }
+      if (sortBy === 'name-desc') {
+        return b.name.localeCompare(a.name)
+      }
+      if (sortBy === 'age-asc') {
+        return a.age - b.age
+      }
+      if (sortBy === 'age-desc') {
+        return b.age - a.age
+      }
+      if (sortBy === 'heart-desc') {
+        return b.vitals.heartRate - a.vitals.heartRate
+      }
+      // Default/fallback (by ID)
+      return a.id.localeCompare(b.id)
+    })
+
+    return result
+  })()
 
   return (
     <div className="min-h-screen bg-[#EDF3F8] text-[#1B2D5E] flex font-['Inter',system-ui,sans-serif] w-full">
@@ -228,6 +276,68 @@ function Dashboard({ user, onLogout }: DashboardProps) {
                   <div>
                     <h3 className="text-[20px] font-extrabold text-[#1B2D5E] tracking-tight mb-1">Patient Directory</h3>
                     <p className="text-[13px] text-gray-400 font-medium">Viewing all patient records in the database</p>
+                  </div>
+                </div>
+
+                {/* Filter & Sort Controls */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 bg-gray-50/50 p-4 rounded-xl border border-gray-100/80">
+                  {/* Status Filter */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[10px] font-extrabold text-[#1B2D5E] uppercase tracking-wider">Status</label>
+                    <select
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value)}
+                      className="w-full h-9 px-3 rounded-lg border border-gray-200 bg-white text-xs font-semibold text-[#1B2D5E] focus:outline-none focus:border-[#1A7A8A]"
+                    >
+                      <option value="All">All Statuses</option>
+                      <option value="Stable">Stable</option>
+                      <option value="Critical">Critical</option>
+                      <option value="Recovering">Recovering</option>
+                    </select>
+                  </div>
+
+                  {/* Priority Filter */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[10px] font-extrabold text-[#1B2D5E] uppercase tracking-wider">Priority</label>
+                    <select
+                      value={priorityFilter}
+                      onChange={(e) => setPriorityFilter(e.target.value)}
+                      className="w-full h-9 px-3 rounded-lg border border-gray-200 bg-white text-xs font-semibold text-[#1B2D5E] focus:outline-none focus:border-[#1A7A8A]"
+                    >
+                      <option value="All">All Patients</option>
+                      <option value="Priority">Priority Only</option>
+                    </select>
+                  </div>
+
+                  {/* Gender Filter */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[10px] font-extrabold text-[#1B2D5E] uppercase tracking-wider">Gender</label>
+                    <select
+                      value={genderFilter}
+                      onChange={(e) => setGenderFilter(e.target.value)}
+                      className="w-full h-9 px-3 rounded-lg border border-gray-200 bg-white text-xs font-semibold text-[#1B2D5E] focus:outline-none focus:border-[#1A7A8A]"
+                    >
+                      <option value="All">All Genders</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                    </select>
+                  </div>
+
+                  {/* Sort Controls */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[10px] font-extrabold text-[#1B2D5E] uppercase tracking-wider">Sort By</label>
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      className="w-full h-9 px-3 rounded-lg border border-gray-200 bg-white text-xs font-semibold text-[#1B2D5E] focus:outline-none focus:border-[#1A7A8A]"
+                    >
+                      <option value="default">Default (ID)</option>
+                      <option value="name-asc">Name (A-Z)</option>
+                      <option value="name-desc">Name (Z-A)</option>
+                      <option value="age-asc">Age (Youngest first)</option>
+                      <option value="age-desc">Age (Oldest first)</option>
+                      <option value="heart-desc">Heart Rate (High to Low)</option>
+                    </select>
                   </div>
                 </div>
 
