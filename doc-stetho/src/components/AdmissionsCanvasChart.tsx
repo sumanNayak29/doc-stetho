@@ -5,8 +5,8 @@ export default function AdmissionsCanvasChart() {
   const containerRef = useRef<HTMLDivElement>(null)
   const [hoverIndex, setHoverIndex] = useState<number | null>(null)
 
-  const admissionsData = [12, 19, 15, 22, 18, 9, 14]
-  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+  const admissionsData = [10, 15, 12, 19, 15, 22, 18, 14, 16, 21, 17, 23, 19, 20]
+  const days = ['May 18', 'May 19', 'May 20', 'May 21', 'May 22', 'May 23', 'May 24', 'May 25', 'May 26', 'May 27', 'May 28', 'May 29', 'May 30', 'May 31']
   const maxAdmission = 25
   const strokeColor = '#1A7A8A'
 
@@ -38,7 +38,7 @@ export default function AdmissionsCanvasChart() {
       const cWidth = width - padLeft - padRight
       const cHeight = height - padTop - padBottom
 
-      const getX = (idx: number) => padLeft + idx * (cWidth / 6)
+      const getX = (idx: number) => padLeft + idx * (cWidth / (admissionsData.length - 1))
       const getY = (val: number) => height - padBottom - (val / maxAdmission) * cHeight
 
       // Draw grid lines
@@ -71,8 +71,11 @@ export default function AdmissionsCanvasChart() {
       ctx.textAlign = 'center'
       ctx.textBaseline = 'top'
       days.forEach((day, idx) => {
-        const xVal = getX(idx)
-        ctx.fillText(day, xVal, height - padBottom + 10)
+        // Stagger labels to prevent overlapping: draw every second label
+        if (idx % 2 === 0) {
+          const xVal = getX(idx)
+          ctx.fillText(day, xVal, height - padBottom + 10)
+        }
       })
 
       // Draw filled area under curve
@@ -183,7 +186,7 @@ export default function AdmissionsCanvasChart() {
     const padLeft = 40
     const padRight = 20
     const cWidth = rect.width - padLeft - padRight
-    const getX = (idx: number) => padLeft + idx * (cWidth / 6)
+    const getX = (idx: number) => padLeft + idx * (cWidth / (admissionsData.length - 1))
 
     let foundIdx: number | null = null
     for (let i = 0; i < admissionsData.length; i++) {

@@ -3,6 +3,7 @@ import HeartIcon from '../assets/icons/HeartIcon'
 import BoltIcon from '../assets/icons/BoltIcon'
 import TempIcon from '../assets/icons/TempIcon'
 import { type Patient } from '../types'
+import StatusIndicator from './StatusIndicator'
 
 interface PatientTableProps {
   loading: boolean
@@ -117,7 +118,7 @@ export default function PatientTable({
                   }`}
                 >
                   {patient.status === 'Critical' && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-red-600 mr-1 animate-ping" />
+                    <StatusIndicator color="red" size="sm" pulse={true} className="mr-1" />
                   )}
                   {patient.status}
                 </span>

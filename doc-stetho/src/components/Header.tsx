@@ -1,6 +1,7 @@
 import SearchIcon from '../assets/icons/SearchIcon'
 import BellIcon from '../assets/icons/BellIcon'
 import { type UserProfile } from '../types'
+import StatusIndicator from './StatusIndicator'
 
 interface HeaderProps {
   user: UserProfile
@@ -19,8 +20,9 @@ export default function Header({ user, searchQuery, setSearchQuery }: HeaderProp
     <header className="h-[76px] bg-white/80 backdrop-blur-xl border-b border-gray-200/60 px-8 flex items-center justify-between shrink-0 sticky top-0 z-20">
       {/* Welcome Text */}
       <div className="flex flex-col">
-        <h2 className="text-[20px] font-extrabold tracking-tight text-[#1B2D5E]">
+        <h2 className="text-[20px] font-extrabold tracking-tight text-[#1B2D5E] flex items-center gap-2">
           Welcome, Dr. {user.name.split(' ')[0]}
+          <StatusIndicator color="emerald" size="lg" title="Online" />
         </h2>
         <p className="text-xs text-gray-500 font-medium">
           {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' })}
@@ -64,7 +66,10 @@ export default function Header({ user, searchQuery, setSearchQuery }: HeaderProp
             </div>
           )}
           <div className="flex flex-col hidden lg:flex">
-            <span className="text-[14px] font-bold text-[#1B2D5E] leading-none mb-1">{user.name}</span>
+            <div className="flex items-center gap-1.5 mb-1">
+              <span className="text-[14px] font-bold text-[#1B2D5E] leading-none">{user.name}</span>
+              <StatusIndicator color="emerald" size="md" title="Online" />
+            </div>
             <span className="text-[11px] text-gray-400 font-medium leading-none">{user.email}</span>
           </div>
         </div>

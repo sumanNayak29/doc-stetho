@@ -12,6 +12,7 @@ import Header from './components/Header'
 import PatientTable from './components/PatientTable'
 import PatientDetailsPane from './components/PatientDetailsPane'
 import { useAppointmentsStore } from '../store/appointments'
+import StatusIndicator from './components/StatusIndicator'
 
 interface DashboardProps {
   user: UserProfile
@@ -130,8 +131,8 @@ function Dashboard({ user, onLogout }: DashboardProps) {
                 {/* Weekly Admissions Trend Chart (Left Side) */}
                 <div className="xl:col-span-2 bg-white/80 backdrop-blur-xl border border-white/60 rounded-2xl p-6 shadow-[0_4px_24px_rgba(27,45,94,0.02)] flex flex-col gap-4 animate-[cardIn_0.3s_ease_both]">
                   <div>
-                    <h3 className="text-[18px] font-extrabold text-[#1B2D5E] tracking-tight mb-1">Weekly Admissions Trend</h3>
-                    <p className="text-[13px] text-gray-400 font-medium">Daily statistics of new patient check-ins</p>
+                    <h3 className="text-[18px] font-extrabold text-[#1B2D5E] tracking-tight mb-1">Admissions Trend</h3>
+                    <p className="text-[13px] text-gray-400 font-medium">Bi-weekly statistics of new patient check-ins</p>
                   </div>
                   <div className="relative bg-gray-50/50 rounded-xl border border-gray-100 p-4">
                     <AdmissionsCanvasChart />
@@ -267,7 +268,10 @@ function Dashboard({ user, onLogout }: DashboardProps) {
                           <h4 className="text-[15px] font-extrabold text-[#1B2D5E] truncate">{appointment.name}</h4>
                           <p className="text-[13px] text-gray-500 font-medium mb-1 truncate">{appointment.condition}</p>
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold ${appointment.status === 'Critical' ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold ${appointment.status === 'Critical' ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                              {appointment.status === 'Critical' && (
+                                <StatusIndicator color="red" size="sm" pulse={true} className="mr-0.5" />
+                              )}
                               {appointment.status}
                             </span>
                             {status === 'attended' && (
@@ -322,7 +326,7 @@ function Dashboard({ user, onLogout }: DashboardProps) {
                       {/* Display attended text */}
                       {status === 'attended' && (
                         <div className="mt-3 pt-3 border-t border-emerald-100/50 text-[12px] text-emerald-700 font-semibold flex items-center gap-1.5 animate-[slideUp_0.2s_ease_both]">
-                          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                          <StatusIndicator color="emerald" size="sm" pulse={true} />
                           I attended this appointment
                         </div>
                       )}
@@ -361,8 +365,8 @@ function Dashboard({ user, onLogout }: DashboardProps) {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-2">
                 <div className="bg-white/80 backdrop-blur-xl border border-white/60 rounded-2xl p-6 shadow-[0_4px_24px_rgba(27,45,94,0.02)] flex flex-col gap-4">
                   <div>
-                    <h4 className="text-[16px] font-bold text-[#1B2D5E] mb-1">Weekly Admissions Trend</h4>
-                    <p className="text-xs text-gray-400 font-medium">Daily statistics of new patient check-ins</p>
+                    <h4 className="text-[16px] font-bold text-[#1B2D5E] mb-1">Admissions Trend</h4>
+                    <p className="text-xs text-gray-400 font-medium">Bi-weekly statistics of new patient check-ins</p>
                   </div>
                   <div className="relative bg-gray-50/50 rounded-xl border border-gray-100 p-4">
                     <AdmissionsCanvasChart />

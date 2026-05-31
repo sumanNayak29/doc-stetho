@@ -4,6 +4,7 @@ import HeartIcon from '../assets/icons/HeartIcon'
 import BoltIcon from '../assets/icons/BoltIcon'
 import TempIcon from '../assets/icons/TempIcon'
 import VitalsCanvasChart from './VitalsCanvasChart'
+import StatusIndicator from './StatusIndicator'
 
 interface PatientDetailsPaneProps {
   patient: Patient
@@ -69,13 +70,16 @@ export default function PatientDetailsPane({
         <div className="flex-1 min-w-0 pr-6">
           <div className="flex items-center gap-2 mb-0.5">
             <h4 className="text-[17px] font-extrabold text-[#1B2D5E] leading-snug truncate">{patient.name}</h4>
-            <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
+            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold ${
               patient.status === 'Stable'
                 ? 'bg-emerald-100 text-emerald-700'
                 : patient.status === 'Critical'
-                  ? 'bg-red-100 text-red-700 animate-pulse'
+                  ? 'bg-red-100 text-red-700'
                   : 'bg-[#EDF3F8] text-[#1A7A8A]'
             }`}>
+              {patient.status === 'Critical' && (
+                <StatusIndicator color="red" size="sm" pulse={true} className="mr-0.5" />
+              )}
               {patient.status}
             </span>
           </div>
