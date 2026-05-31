@@ -1,0 +1,59 @@
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+import { useShallow } from 'zustand/react/shallow'
+import { createAuthSlice, type AuthSlice, type UserProfile } from './userLoginData'
+import { createAppointmentsSlice, type AppointmentsSlice, type AppointmentStatus } from './appointments'
+import { createPatientsSlice, type PatientsSlice } from './patients'
+
+// ─── Full Bound Store Type ────────────────────────────────────────────────────
+
+type BoundStore = AuthSlice & AppointmentsSlice & PatientsSlice
+
+// ─── Single Bounded Store ─────────────────────────────────────────────────────
+
+export const useBoundStore = create<BoundStore>()(
+    persist(
+        (...a) => ({
+            ...createAuthSlice(...a),
+            ...createAppointmentsSlice(...a),
+            ...createPatientsSlice(...a),
+        }),
+        {
+            name: 'docstetho-store',
+        }
+    )
+)
+
+// ─── Re-export types ──────────────────────────────────────────────────────────
+
+export type { UserProfile, AppointmentStatus }
+
+// ─── Named Selector Hooks (drop-in replacements for old per-file hooks) ───────
+
+/** Auth – replaces useUserLoginData() */
+export const useUserLoginData = () =>
+    useBoundStore(
+        useShallow((state) => ({
+            userLoginData: state.userLoginData,
+            setUserLoginData: state.setUserLoginData,
+            clearUserLoginData: state.clearUserLoginData,
+        }))
+    )
+
+/** Appointments – replaces useAppointmentsStore() */
+export const useAppointmentsStore = () =>
+    useBoundStore(
+        useShallow((state) => ({
+            appointmentStatuses: state.appointmentStatuses,
+            setAppointmentStatus: state.setAppointmentStatus,
+            resetAppointmentStatuses: state.resetAppointmentStatuses,
+        }))
+    )
+
+/** Patients – replaces usePatientsStore() */
+export const usePatientsStore = () =>
+    useBoundStore(useShallow((state) => ({
+        priorityPatients: state.priorityPatients,
+        togglePriority: state.togglePriority,
+        resetPriorityPatients: state.resetPriorityPatients,
+    })))

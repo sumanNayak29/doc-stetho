@@ -1,27 +1,21 @@
-import { create } from "zustand"
-import { persist } from "zustand/middleware"
+import { type StateCreator } from 'zustand'
 
-interface AppointmentsStore {
-  appointmentStatuses: Record<string, 'pending' | 'attended' | 'rejected'>
-  setAppointmentStatus: (id: string, status: 'attended' | 'rejected') => void
-  resetAppointmentStatuses: () => void
+export type AppointmentStatus = 'pending' | 'attended' | 'rejected'
+
+export interface AppointmentsSlice {
+    appointmentStatuses: Record<string, AppointmentStatus>
+    setAppointmentStatus: (id: string, status: 'attended' | 'rejected') => void
+    resetAppointmentStatuses: () => void
 }
 
-export const useAppointmentsStore = create<AppointmentsStore>()(
-  persist(
-    (set) => ({
-      appointmentStatuses: {},
-      setAppointmentStatus: (id: string, status: 'attended' | 'rejected') =>
+export const createAppointmentsSlice: StateCreator<AppointmentsSlice, [], [], AppointmentsSlice> = (set) => ({
+    appointmentStatuses: {},
+    setAppointmentStatus: (id, status) =>
         set((state) => ({
-          appointmentStatuses: {
-            ...state.appointmentStatuses,
-            [id]: status
-          }
+            appointmentStatuses: {
+                ...state.appointmentStatuses,
+                [id]: status,
+            },
         })),
-      resetAppointmentStatuses: () => set({ appointmentStatuses: {} }),
-    }),
-    {
-      name: "docstetho-appointments-storage",
-    }
-  )
-)
+    resetAppointmentStatuses: () => set({ appointmentStatuses: {} }),
+})

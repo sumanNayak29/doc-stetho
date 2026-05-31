@@ -1,27 +1,19 @@
-import { create } from "zustand"
-import { persist } from "zustand/middleware"
+import { type StateCreator } from 'zustand'
 
-interface PatientsStore {
-  priorityPatients: Record<string, boolean>
-  togglePriority: (id: string) => void
-  resetPriorityPatients: () => void
+export interface PatientsSlice {
+    priorityPatients: Record<string, boolean>
+    togglePriority: (id: string) => void
+    resetPriorityPatients: () => void
 }
 
-export const usePatientsStore = create<PatientsStore>()(
-  persist(
-    (set) => ({
-      priorityPatients: {},
-      togglePriority: (id: string) =>
+export const createPatientsSlice: StateCreator<PatientsSlice, [], [], PatientsSlice> = (set) => ({
+    priorityPatients: {},
+    togglePriority: (id) =>
         set((state) => ({
-          priorityPatients: {
-            ...state.priorityPatients,
-            [id]: !state.priorityPatients[id]
-          }
+            priorityPatients: {
+                ...state.priorityPatients,
+                [id]: !state.priorityPatients[id],
+            },
         })),
-      resetPriorityPatients: () => set({ priorityPatients: {} })
-    }),
-    {
-      name: "docstetho-patients-storage"
-    }
-  )
-)
+    resetPriorityPatients: () => set({ priorityPatients: {} }),
+})

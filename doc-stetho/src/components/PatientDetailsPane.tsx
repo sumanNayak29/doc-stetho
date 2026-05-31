@@ -6,7 +6,7 @@ import TempIcon from '../assets/icons/TempIcon'
 import VitalsCanvasChart from './VitalsCanvasChart'
 import StatusIndicator from './StatusIndicator'
 import StarIcon from '../assets/icons/StarIcon'
-import { usePatientsStore } from '../../store/patients'
+import { usePatientsStore } from '../../store'
 import PulseLiveChart from './PulseLiveChart'
 
 interface PatientDetailsPaneProps {

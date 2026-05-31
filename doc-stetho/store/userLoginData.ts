@@ -1,5 +1,4 @@
-import { create } from "zustand"
-import { persist } from "zustand/middleware"
+import { type StateCreator } from 'zustand'
 
 export interface UserProfile {
     name: string
@@ -8,24 +7,16 @@ export interface UserProfile {
 }
 
 const initialState: { userLoginData: UserProfile | null } = {
-    userLoginData: null,
+    userLoginData: null
 }
 
-type UserLoginDataStore = typeof initialState & {
-    setUserLoginData: (userLoginData: UserProfile) => void
+export type AuthSlice = typeof initialState & {
+    setUserLoginData: (profile: UserProfile) => void
     clearUserLoginData: () => void
 }
 
-export const useUserLoginData = create<UserLoginDataStore>()(
-    persist(
-        (set) => ({
-            ...initialState,
-            setUserLoginData: (userLoginData: UserProfile) => set({ userLoginData }),
-            clearUserLoginData: () => set({ userLoginData: null }),
-        }),
-        {
-            name: "user-login-data-storage",
-            // By default, if you don't pass a custom storage engine, Zustand uses localStorage behind the scenes. This means your user profile will survive page refreshes automatically.
-        }
-    )
-)
+export const createAuthSlice: StateCreator<AuthSlice, [], [], AuthSlice> = (set) => ({
+    ...initialState,
+    setUserLoginData: (profile) => set({ userLoginData: profile }),
+    clearUserLoginData: () => set({ userLoginData: null }),
+})

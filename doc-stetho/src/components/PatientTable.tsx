@@ -5,7 +5,7 @@ import TempIcon from '../assets/icons/TempIcon'
 import { type Patient } from '../types'
 import StatusIndicator from './StatusIndicator'
 import StarIcon from '../assets/icons/StarIcon'
-import { usePatientsStore } from '../../store/patients'
+import { usePatientsStore } from '../../store'
 
 interface PatientTableProps {
   loading: boolean

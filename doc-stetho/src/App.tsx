@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { useUserLoginData, type UserProfile } from '../store/userLoginData'
+import { useUserLoginData, type UserProfile } from '../store'
 
 const Dashboard = lazy(() => import('./Dashboard'))
 const LoginPage = lazy(() => import('./LoginPage'))
