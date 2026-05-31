@@ -7,8 +7,11 @@ export interface UserProfile {
     picture?: string
 }
 
-interface UserLoginDataStore {
-    userLoginData: UserProfile | null
+const initialState: { userLoginData: UserProfile | null } = {
+    userLoginData: null,
+}
+
+type UserLoginDataStore = typeof initialState & {
     setUserLoginData: (userLoginData: UserProfile) => void
     clearUserLoginData: () => void
 }
@@ -16,7 +19,7 @@ interface UserLoginDataStore {
 export const useUserLoginData = create<UserLoginDataStore>()(
     persist(
         (set) => ({
-            userLoginData: null,
+            ...initialState,
             setUserLoginData: (userLoginData: UserProfile) => set({ userLoginData }),
             clearUserLoginData: () => set({ userLoginData: null }),
         }),
