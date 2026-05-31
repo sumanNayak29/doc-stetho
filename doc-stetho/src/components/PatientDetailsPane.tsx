@@ -13,17 +13,13 @@ interface PatientDetailsPaneProps {
   onClose: () => void
   patientPictures: Record<string, string>
   onAvatarChange: (patientId: string, base64: string) => void
-  chartType: 'heartRate' | 'temp'
-  setChartType: (type: 'heartRate' | 'temp') => void
 }
 
 export default function PatientDetailsPane({
   patient,
   onClose,
   patientPictures,
-  onAvatarChange,
-  chartType,
-  setChartType
+  onAvatarChange
 }: PatientDetailsPaneProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { priorityPatients, togglePriority } = usePatientsStore()
@@ -151,29 +147,13 @@ export default function PatientDetailsPane({
       {/* Vitals Timeline Canvas Chart */}
       <div className="flex flex-col gap-2">
         <div className="flex justify-between items-center mb-1">
-          <span className="text-[11px] text-gray-400 font-bold uppercase tracking-wider">Metric Timeline (12h)</span>
-          <div className="flex gap-1 bg-gray-100 p-0.5 rounded-lg border border-gray-200/50">
-            <button
-              onClick={(e) => { e.stopPropagation(); setChartType('heartRate'); }}
-              className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
-                chartType === 'heartRate' ? 'bg-white text-red-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              Heart Rate
-            </button>
-            <button
-              onClick={(e) => { e.stopPropagation(); setChartType('temp'); }}
-              className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
-                chartType === 'temp' ? 'bg-white text-amber-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              Temperature
-            </button>
-          </div>
+          <span className="text-[11px] text-gray-400 font-bold uppercase tracking-wider">Live Vitals Telemetry Monitor</span>
+          <span className="flex items-center gap-1.5 text-[9px] font-extrabold text-emerald-500 uppercase tracking-widest bg-emerald-500/10 px-2 py-0.5 rounded-md animate-pulse">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            Telemetry Active
+          </span>
         </div>
-        <div className="relative bg-gray-50/50 rounded-xl border border-gray-100 p-2.5">
-          <VitalsCanvasChart patient={patient} chartType={chartType} />
-        </div>
+        <VitalsCanvasChart patient={patient} />
       </div>
     </div>
   )
