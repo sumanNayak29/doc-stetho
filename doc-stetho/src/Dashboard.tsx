@@ -15,6 +15,7 @@ import { useAppointmentsStore } from '../store/appointments'
 import StatusIndicator from './components/StatusIndicator'
 import { usePatientsStore } from '../store/patients'
 import VitalsCanvasChart from './components/VitalsCanvasChart'
+import PulseLiveChart from './components/PulseLiveChart'
 
 interface DashboardProps {
   user: UserProfile
@@ -268,7 +269,7 @@ function Dashboard({ user, onLogout }: DashboardProps) {
 
               {/* Live Patient Telemetry Monitor (Full Width Bottom Panel) */}
               {patients.length > 0 && (
-                <div className="bg-white/80 backdrop-blur-xl border border-white/60 rounded-2xl p-6 shadow-[0_4px_24px_rgba(27,45,94,0.02)] flex flex-col gap-4 animate-[cardIn_0.3s_ease_both]">
+                <div className="bg-white/80 backdrop-blur-xl border border-white/60 rounded-2xl p-6 shadow-[0_4px_24px_rgba(27,45,94,0.02)] flex flex-col gap-6 animate-[cardIn_0.3s_ease_both]">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-100 pb-3">
                     <div>
                       <h3 className="text-[18px] font-extrabold text-[#1B2D5E] tracking-tight mb-1">Live Patient Telemetry Monitor</h3>
@@ -282,6 +283,18 @@ function Dashboard({ user, onLogout }: DashboardProps) {
                     </span>
                   </div>
                   <VitalsCanvasChart patient={selectedPatient || patients[0]} />
+
+                  {/* Pulse Live Telemetry Chart */}
+                  <div className="flex flex-col gap-2 mt-2">
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-[11px] text-gray-400 font-bold uppercase tracking-wider">Live Pulse Rate Monitor (PLETH)</span>
+                      <span className="flex items-center gap-1.5 text-[9px] font-extrabold text-[#00E5FF] uppercase tracking-widest bg-[#00E5FF]/10 px-2 py-0.5 rounded-md animate-pulse">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#00E5FF]"></span>
+                        Pulse Sensor Active
+                      </span>
+                    </div>
+                    <PulseLiveChart patient={selectedPatient || patients[0]} />
+                  </div>
                 </div>
               )}
             </>

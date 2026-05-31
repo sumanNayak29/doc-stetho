@@ -7,6 +7,7 @@ import VitalsCanvasChart from './VitalsCanvasChart'
 import StatusIndicator from './StatusIndicator'
 import StarIcon from '../assets/icons/StarIcon'
 import { usePatientsStore } from '../../store/patients'
+import PulseLiveChart from './PulseLiveChart'
 
 interface PatientDetailsPaneProps {
   patient: Patient
@@ -154,6 +155,18 @@ export default function PatientDetailsPane({
           </span>
         </div>
         <VitalsCanvasChart patient={patient} />
+      </div>
+
+      {/* Pulse Live Telemetry Chart */}
+      <div className="flex flex-col gap-2">
+        <div className="flex justify-between items-center mb-1">
+          <span className="text-[11px] text-gray-400 font-bold uppercase tracking-wider">Live Pulse Rate Monitor (PLETH)</span>
+          <span className="flex items-center gap-1.5 text-[9px] font-extrabold text-[#00E5FF] uppercase tracking-widest bg-[#00E5FF]/10 px-2 py-0.5 rounded-md animate-pulse">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#00E5FF]"></span>
+            Pulse Sensor Active
+          </span>
+        </div>
+        <PulseLiveChart patient={patient} />
       </div>
     </div>
   )
