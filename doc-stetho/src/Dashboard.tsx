@@ -153,30 +153,64 @@ function Dashboard({ user, onLogout }: DashboardProps) {
                     ) : error ? (
                       <div className="text-center py-6 text-sm text-red-500 font-medium">Error loading schedule</div>
                     ) : patients.length > 0 ? (
-                      patients.slice(0, 4).map((appointment, idx) => (
-                        <div key={idx} className="flex gap-4 items-start relative group">
-                          {/* Time Column */}
-                          <div className="w-[72px] shrink-0 text-right">
-                            <span className="text-[13px] font-bold text-[#1B2D5E]">{appointment.time}</span>
-                            <p className="text-[10px] text-gray-400 font-semibold uppercase mt-0.5">EST</p>
-                          </div>
+                      patients.slice(0, 4).map((appointment, idx) => {
+                        const status = appointmentStatuses[appointment.id] || 'pending'
+                        
+                        let dotColorClass = 'bg-[#1A7A8A]'
+                        let cardBgClass = 'bg-gray-50/60 group-hover:bg-gray-50 border-gray-100'
+                        
+                        if (status === 'attended') {
+                          dotColorClass = 'bg-emerald-500'
+                          cardBgClass = 'bg-emerald-50/20 border-emerald-100 group-hover:bg-emerald-50/30'
+                        } else if (status === 'rejected') {
+                          dotColorClass = 'bg-red-400'
+                          cardBgClass = 'bg-red-50/10 border-red-100 opacity-60 group-hover:bg-red-50/15'
+                        }
 
-                          {/* Timeline line/dot */}
-                          <div className="flex flex-col items-center h-full">
-                            <div className="w-3.5 h-3.5 rounded-full border-[3px] border-[#EDF3F8] bg-[#1A7A8A] shadow-sm z-10" />
-                            {idx !== 3 && <div className="w-0.5 bg-gray-200 flex-1 my-1 absolute top-4 bottom-[-16px] left-[88px]" />}
-                          </div>
+                        return (
+                          <div
+                            key={idx}
+                            onClick={() => {
+                              setSelectedApptId(appointment.id)
+                              setActiveTab('Appointments')
+                            }}
+                            className="flex gap-4 items-start relative group cursor-pointer hover:translate-x-1 transition-all duration-200"
+                          >
+                            {/* Time Column */}
+                            <div className="w-[72px] shrink-0 text-right">
+                              <span className="text-[13px] font-bold text-[#1B2D5E]">{appointment.time}</span>
+                              <p className="text-[10px] text-gray-400 font-semibold uppercase mt-0.5">EST</p>
+                            </div>
 
-                          {/* Details Box */}
-                          <div className="flex-1 bg-gray-50/60 group-hover:bg-gray-50 group-hover:shadow-[0_2px_12px_rgba(27,45,94,0.02)] border border-gray-100 rounded-xl p-3.5 transition-all duration-150">
-                            <h4 className="text-[13.5px] font-bold text-[#1B2D5E] mb-0.5 leading-snug">{appointment.name}</h4>
-                            <p className="text-[12.5px] text-gray-500 font-medium mb-2">{appointment.condition}</p>
-                            <span className="inline-flex items-center text-[10px] font-bold text-[#1A7A8A] bg-[#1A7A8A]/10 px-2 py-0.5 rounded-md">
-                              Room {100 + idx * 2}
-                            </span>
+                            {/* Timeline line/dot */}
+                            <div className="flex flex-col items-center h-full">
+                              <div className={`w-3.5 h-3.5 rounded-full border-[3px] border-[#EDF3F8] ${dotColorClass} shadow-sm z-10`} />
+                              {idx !== 3 && <div className="w-0.5 bg-gray-200 flex-1 my-1 absolute top-4 bottom-[-16px] left-[88px]" />}
+                            </div>
+
+                            {/* Details Box */}
+                            <div className={`flex-1 border rounded-xl p-3.5 transition-all duration-150 ${cardBgClass}`}>
+                              <h4 className="text-[13.5px] font-bold text-[#1B2D5E] mb-0.5 leading-snug">{appointment.name}</h4>
+                              <p className="text-[12.5px] text-gray-500 font-medium mb-2">{appointment.condition}</p>
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <span className="inline-flex items-center text-[10px] font-bold text-[#1A7A8A] bg-[#1A7A8A]/10 px-2 py-0.5 rounded-md">
+                                  Room {100 + idx * 2}
+                                </span>
+                                {status === 'attended' && (
+                                  <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-md">
+                                    Attended
+                                  </span>
+                                )}
+                                {status === 'rejected' && (
+                                  <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-red-700 bg-red-100/80 px-2 py-0.5 rounded-md">
+                                    Rejected
+                                  </span>
+                                )}
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      ))
+                        )
+                      })
                     ) : (
                       <div className="text-center py-6 text-sm text-gray-400 font-medium">No appointments scheduled</div>
                     )}
