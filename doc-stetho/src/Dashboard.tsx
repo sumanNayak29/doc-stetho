@@ -127,21 +127,14 @@ function Dashboard({ user, onLogout }: DashboardProps) {
 
               {/* Table and Right Sidebar Panels */}
               <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 items-start">
-                {/* Patients Monitoring Card (Left) */}
-                <div className="xl:col-span-2 bg-white/80 backdrop-blur-xl border border-white/60 rounded-2xl p-6 shadow-[0_4px_24px_rgba(27,45,94,0.02)] flex flex-col gap-6">
+                {/* Weekly Admissions Trend Chart (Left Side) */}
+                <div className="xl:col-span-2 bg-white/80 backdrop-blur-xl border border-white/60 rounded-2xl p-6 shadow-[0_4px_24px_rgba(27,45,94,0.02)] flex flex-col gap-4 animate-[cardIn_0.3s_ease_both]">
                   <div>
-                    <h3 className="text-[18px] font-extrabold text-[#1B2D5E] tracking-tight mb-1">Active Patient Monitoring</h3>
-                    <p className="text-[13px] text-gray-400 font-medium">Real-time update of current patient health metrics</p>
+                    <h3 className="text-[18px] font-extrabold text-[#1B2D5E] tracking-tight mb-1">Weekly Admissions Trend</h3>
+                    <p className="text-[13px] text-gray-400 font-medium">Daily statistics of new patient check-ins</p>
                   </div>
-                  <div className="overflow-x-auto">
-                    <PatientTable
-                      loading={loading}
-                      error={error}
-                      filteredPatients={filteredPatients}
-                      selectedPatientId={selectedPatient?.id}
-                      handlePatientClick={handlePatientClick}
-                      patientPictures={patientPictures}
-                    />
+                  <div className="relative bg-gray-50/50 rounded-xl border border-gray-100 p-4">
+                    <AdmissionsCanvasChart />
                   </div>
                 </div>
 
