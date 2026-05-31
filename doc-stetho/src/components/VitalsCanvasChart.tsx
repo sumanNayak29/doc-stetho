@@ -8,12 +8,12 @@ interface VitalsCanvasChartProps {
 // ECG point generator (one heartbeat cardiac cycle)
 function getECGPoint(phase: number): number {
   let val = 0
-  
+
   // P wave: small bump around phase 0.15 to 0.35
   if (phase > 0.15 && phase < 0.35) {
     val += 0.12 * Math.sin((phase - 0.15) * (Math.PI / 0.2))
   }
-  
+
   // QRS complex: sharp down-up-down spike around phase 0.55 to 0.70
   if (phase >= 0.55 && phase < 0.70) {
     const qrs = (phase - 0.55) / 0.15 // 0 to 1
@@ -30,22 +30,22 @@ function getECGPoint(phase: number): number {
       val = -0.3 + t * 0.3 // return to baseline
     }
   }
-  
+
   // T wave: medium bump around phase 0.85 to 1.15
   if (phase > 0.85 && phase < 1.15) {
     val += 0.22 * Math.sin((phase - 0.85) * (Math.PI / 0.3))
   }
-  
+
   // Add a tiny bit of live raw sensor electrical noise
   val += (Math.random() - 0.5) * 0.015
-  
+
   return val
 }
 
 // Arterial Blood Pressure point generator (aligned with contraction phase)
 function getABPPoint(phase: number): number {
   let val = 0.25 // baseline diastolic
-  
+
   // Systolic rise: phase 0.55 to 0.85
   if (phase >= 0.55 && phase < 0.85) {
     const t = (phase - 0.55) / 0.3
@@ -63,7 +63,7 @@ function getABPPoint(phase: number): number {
 
   // Add small pressure fluctuation noise
   val += (Math.random() - 0.5) * 0.01
-  
+
   return val
 }
 
@@ -71,7 +71,7 @@ function getABPPoint(phase: number): number {
 function getCO2Point(phase: number): number {
   const cycle = phase / (2 * Math.PI)
   let val = 0
-  
+
   if (cycle < 0.25) {
     val = 0.0 // inhalation/baseline
   } else if (cycle >= 0.25 && cycle < 0.33) {
@@ -89,7 +89,7 @@ function getCO2Point(phase: number): number {
 
   // Add small sensor noise
   val += (Math.random() - 0.5) * 0.008
-  
+
   return Math.max(0, val)
 }
 
@@ -121,19 +121,19 @@ export default function VitalsCanvasChart({ patient }: VitalsCanvasChartProps) {
         const hrOffset = Math.round((Math.random() - 0.5) * 4) // +/-2 bpm
         const sysOffset = Math.round((Math.random() - 0.5) * 4) // +/-2 mmHg
         const diaOffset = Math.round((Math.random() - 0.5) * 3) // +/-1.5 mmHg
-        
+
         const nextHR = Math.max(50, Math.min(180, prev.hr + hrOffset))
         const nextSys = Math.max(90, Math.min(190, prev.bpSystolic + sysOffset))
         const nextDia = Math.max(50, Math.min(110, prev.bpDiastolic + diaOffset))
         const nextMean = Math.round(nextDia + (nextSys - nextDia) / 3)
-        
+
         const nextSpo2 = Math.max(95, Math.min(100, prev.spo2 + (Math.random() > 0.85 ? (Math.random() > 0.5 ? 1 : -1) : 0)))
         const nextEtco2 = Math.max(24, Math.min(38, prev.etco2 + (Math.random() > 0.7 ? (Math.random() > 0.5 ? 1 : -1) : 0)))
         const nextRR = Math.max(12, Math.min(22, prev.rr + (Math.random() > 0.8 ? (Math.random() > 0.5 ? 1 : -1) : 0)))
-        
+
         const tempOffset = parseFloat(((Math.random() - 0.5) * 0.1).toFixed(1))
         const nextTemp = parseFloat(Math.max(34.0, Math.min(41.0, prev.temp + tempOffset)).toFixed(1))
-        
+
         return {
           hr: nextHR,
           bpSystolic: nextSys,
@@ -286,7 +286,7 @@ export default function VitalsCanvasChart({ patient }: VitalsCanvasChartProps) {
         const leadingIdx = Math.max(0, sweepIndex.current - 1)
         const leadX = getX(leadingIdx)
         const leadY = getYVal(buffer[leadingIdx])
-        
+
         ctx.beginPath()
         ctx.arc(leadX, leadY, 3.5, 0, 2 * Math.PI)
         ctx.fillStyle = '#FFFFFF'
@@ -314,7 +314,7 @@ export default function VitalsCanvasChart({ patient }: VitalsCanvasChartProps) {
   }, [vitals.hr, vitals.rr])
 
   return (
-    <div ref={containerRef} className="w-full bg-[#000000] border-2 border-[#1E293B] rounded-xl overflow-hidden grid grid-cols-12 h-[260px] select-none">
+    <div ref={containerRef} className="w-full bg-[#000000] border-2 border-[#1E293B] rounded-xl overflow-hidden grid grid-cols-12 select-none">
       {/* Waveform Canvas Panel */}
       <div className="col-span-9 relative bg-black flex flex-col justify-between p-1">
         {/* Waveform text overlays */}
