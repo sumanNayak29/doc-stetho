@@ -135,12 +135,12 @@ function Dashboard({ user, onLogout }: DashboardProps) {
   })()
 
   return (
-    <div className="min-h-screen bg-[#EDF3F8] text-[#1B2D5E] flex font-['Inter',system-ui,sans-serif] w-full">
+    <div className="h-screen bg-[#EDF3F8] text-[#1B2D5E] flex font-['Inter',system-ui,sans-serif] w-full">
       {/* Sidebar Navigation */}
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} onLogout={onLogout} />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col overflow-y-auto min-w-0">
+      <div className="flex-1 flex flex-col overflow-y-auto min-w-0 scrollbar-hide">
         {/* Header Bar */}
         <Header user={user} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
@@ -204,10 +204,10 @@ function Dashboard({ user, onLogout }: DashboardProps) {
                     ) : patients.length > 0 ? (
                       patients.slice(0, 4).map((appointment, idx) => {
                         const status = appointmentStatuses[appointment.id] || 'pending'
-                        
+
                         let dotColorClass = 'bg-[#1A7A8A]'
                         let cardBgClass = 'bg-gray-50/60 group-hover:bg-gray-50 border-gray-100'
-                        
+
                         if (status === 'attended') {
                           dotColorClass = 'bg-emerald-500'
                           cardBgClass = 'bg-emerald-50/20 border-emerald-100 group-hover:bg-emerald-50/30'
@@ -388,7 +388,7 @@ function Dashboard({ user, onLogout }: DashboardProps) {
 
               {/* Right Column: Selected Patient Details (Full info, Custom Pic, Vitals Chart) */}
               {selectedPatient && (
-                <div className="xl:col-span-5 w-full">
+                <div className="xl:col-span-5 w-full sticky top-0 max-h-[calc(100vh-7rem)] overflow-y-auto scrollbar-hide rounded-2xl">
                   <PatientDetailsPane
                     patient={selectedPatient}
                     onClose={() => setSelectedPatient(null)}
@@ -534,7 +534,7 @@ function Dashboard({ user, onLogout }: DashboardProps) {
                   <span className="text-xs text-[#1A7A8A] font-bold">Based on 320 feedback entries</span>
                 </div>
               </div>
-              
+
               {/* Analytics Charts */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-2">
                 <div className="bg-white/80 backdrop-blur-xl border border-white/60 rounded-2xl p-6 shadow-[0_4px_24px_rgba(27,45,94,0.02)] flex flex-col gap-4">
