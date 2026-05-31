@@ -29,12 +29,12 @@ export default function PatientTable({
   return (
     <table className="w-full border-collapse">
       <thead>
-        <tr className="border-b border-gray-100 text-left">
-          <th className="pb-3 text-[12.5px] font-bold text-gray-400 uppercase tracking-wider">Patient ID / Name</th>
-          <th className="pb-3 text-[12.5px] font-bold text-gray-400 uppercase tracking-wider">Condition</th>
-          <th className="pb-3 text-[12.5px] font-bold text-gray-400 uppercase tracking-wider">Vitals</th>
-          <th className="pb-3 text-[12.5px] font-bold text-gray-400 uppercase tracking-wider">Status</th>
-          <th className="pb-3 text-[12.5px] font-bold text-gray-400 uppercase tracking-wider text-right">Priority</th>
+        <tr className="text-left">
+          <th className="sticky top-0 bg-white/95 backdrop-blur-md pb-3 text-[12.5px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 z-10">Patient ID / Name</th>
+          <th className="sticky top-0 bg-white/95 backdrop-blur-md pb-3 text-[12.5px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 z-10">Condition</th>
+          <th className="sticky top-0 bg-white/95 backdrop-blur-md pb-3 text-[12.5px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 z-10">Vitals</th>
+          <th className="sticky top-0 bg-white/95 backdrop-blur-md pb-3 text-[12.5px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 z-10">Status</th>
+          <th className="sticky top-0 bg-white/95 backdrop-blur-md pb-3 text-[12.5px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 z-10 text-right">Priority</th>
         </tr>
       </thead>
       <tbody className="divide-y divide-gray-50">

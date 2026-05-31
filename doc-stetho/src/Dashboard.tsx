@@ -374,7 +374,7 @@ function Dashboard({ user, onLogout }: DashboardProps) {
                 </div>
 
                 {/* Patient Table */}
-                <div className="overflow-x-auto">
+                <div className="overflow-y-auto overflow-x-auto max-h-[650px] pr-1.5 custom-scrollbar">
                   <PatientTable
                     loading={loading}
                     error={error}
