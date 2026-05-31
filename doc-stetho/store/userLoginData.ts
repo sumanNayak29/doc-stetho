@@ -22,6 +22,7 @@ export const useUserLoginData = create<UserLoginDataStore>()(
         }),
         {
             name: "user-login-data-storage",
+            // By default, if you don't pass a custom storage engine, Zustand uses localStorage behind the scenes. This means your user profile will survive page refreshes automatically.
         }
     )
 )
