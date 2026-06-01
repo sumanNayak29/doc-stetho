@@ -1,4 +1,4 @@
-import { create } from 'zustand'
+import { create, type ExtractState } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { useShallow } from 'zustand/react/shallow'
 import { createAuthSlice, type AuthSlice, type UserProfile } from './userLoginData'
@@ -8,6 +8,8 @@ import { createPatientsSlice, type PatientsSlice } from './patients'
 // ─── Full Bound Store Type ────────────────────────────────────────────────────
 
 type BoundStore = AuthSlice & AppointmentsSlice & PatientsSlice
+
+export type StoreState = ExtractState<typeof useBoundStore>
 
 // ─── Single Bounded Store ─────────────────────────────────────────────────────
 
@@ -33,7 +35,7 @@ export type { UserProfile, AppointmentStatus }
 /** Auth – replaces useUserLoginData() */
 export const useUserLoginData = () =>
     useBoundStore(
-        useShallow((state) => ({
+        useShallow((state: StoreState) => ({
             userLoginData: state.userLoginData,
             setUserLoginData: state.setUserLoginData,
             clearUserLoginData: state.clearUserLoginData,
@@ -43,7 +45,7 @@ export const useUserLoginData = () =>
 /** Appointments – replaces useAppointmentsStore() */
 export const useAppointmentsStore = () =>
     useBoundStore(
-        useShallow((state) => ({
+        useShallow((state: StoreState) => ({
             appointmentStatuses: state.appointmentStatuses,
             setAppointmentStatus: state.setAppointmentStatus,
             resetAppointmentStatuses: state.resetAppointmentStatuses,
@@ -52,7 +54,7 @@ export const useAppointmentsStore = () =>
 
 /** Patients – replaces usePatientsStore() */
 export const usePatientsStore = () =>
-    useBoundStore(useShallow((state) => ({
+    useBoundStore(useShallow((state: StoreState) => ({
         priorityPatients: state.priorityPatients,
         togglePriority: state.togglePriority,
         resetPriorityPatients: state.resetPriorityPatients,
