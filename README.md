@@ -46,37 +46,6 @@ The standout technical centerpiece is a custom **HTML5 Canvas rendering engine**
 
 ---
 
-## 📁 Project Structure
-
-```
-doc-stetho/
-├── public/
-│   └── mockdatabase/
-│       ├── doc_data.json              # Mock doctor credentials
-│       └── patient_data.json          # Patient directory database
-├── store/
-│   ├── index.ts                       # Bounded Zustand store & hooks
-│   ├── appointments.ts                # Appointments slice
-│   ├── patients.ts                    # Patients slice
-│   └── userLoginData.ts               # Auth slice
-└── src/
-    ├── App.tsx                        # Auth guard & lazy router
-    ├── Dashboard.tsx                  # Main layout
-    ├── LoginPage.tsx                  # OAuth + form login
-    ├── types.ts                       # Shared TypeScript types
-    └── components/
-        ├── PatientTable.tsx           # Filterable patient directory
-        ├── VitalsCanvasChart.tsx      # ICU oscilloscope (ECG, ABP)
-        ├── PulseLiveChart.tsx         # Plethysmograph (SpO2)
-        ├── AdmissionsCanvasChart.tsx  # Admission trends graph
-        ├── ConditionsCanvasChart.tsx  # Condition distribution graph
-        ├── PatientDetailsPane.tsx     # Avatar upload & metadata drawer
-        ├── Sidebar.tsx                # Navigation
-        ├── Header.tsx                 # Search & user status
-        └── StatusIndicator.tsx        # Pulsing live status indicators
-```
-
----
 
 ## 💻 Getting Started
 
@@ -114,11 +83,11 @@ You can log in with any email/password (the app derives a doctor name from your 
 
 | Doctor | Email | Specialty |
 |---|---|---|
-| Dr. Gregory House | `g.house@docstetho.com` | Diagnostic Medicine |
-| Dr. Stephen Strange | `s.strange@docstetho.com` | Neurosurgery |
-| Dr. Helen Cho | `h.cho@docstetho.com` | Genetics & Biotech |
-| Dr. Meredith Grey | `m.grey@docstetho.com` | General Surgery |
-| Dr. Dana Scully | `d.scully@docstetho.com` | Pathology |
+| Dr. Gregory House | `g.house@docstetho.com` | [PASSWORD] | Diagnostic Medicine |
+| Dr. Stephen Strange | `s.strange@docstetho.com` | [PASSWORD] | Neurosurgery |
+| Dr. Helen Cho | `h.cho@docstetho.com` | [PASSWORD] | Genetics & Biotech |
+| Dr. Meredith Grey | `m.grey@docstetho.com` | [PASSWORD] | General Surgery |
+| Dr. Dana Scully | `d.scully@docstetho.com` | [PASSWORD] | Pathology |
 
 ---
 
