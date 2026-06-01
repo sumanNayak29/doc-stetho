@@ -22,24 +22,55 @@ function LoginPage({ onLoginSuccess }: LoginPageProps) {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    setTimeout(() => {
-      setIsLoading(false)
-      // Extract a nice display name from the email prefix (e.g. john.doe -> John Doe)
-      const emailPrefix = email.split('@')[0]
-      const displayName = emailPrefix
-        .split(/[._-]/)
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ')
+    setError(null)
 
-      onLoginSuccess({
-        name: displayName,
-        email: email,
-      })
-    }, 1500)
+    try {
+      const response = await fetch('/mockdatabase/doc_data.json')
+      if (!response.ok) {
+        throw new Error('Failed to fetch doctor database')
+      }
+      const doctors = await response.json()
+
+      // Find the doctor matching the entered email (case-insensitive)
+      const doctor = doctors.find(
+        (doc: any) => doc.email?.toLowerCase() === email.trim().toLowerCase()
+      )
+
+      if (!doctor) {
+        setError('Access denied. This email is not registered as an authorized doctor.')
+        setIsLoading(false)
+        return
+      }
+
+      // Check if password matches (allow either the literal '[PASSWORD]' in JSON or 'password')
+      const isPasswordValid =
+        password === doctor.password ||
+        (doctor.password === '[PASSWORD]' && (password === 'password' || password === '[PASSWORD]'))
+
+      if (!isPasswordValid) {
+        setError('Incorrect password. Please try again.')
+        setIsLoading(false)
+        return
+      }
+
+      // Simulate network request delay
+      setTimeout(() => {
+        setIsLoading(false)
+        onLoginSuccess({
+          name: doctor.name || 'Doctor',
+          email: doctor.email,
+        })
+      }, 1000)
+    } catch (err) {
+      console.error('Login error:', err)
+      setError('An error occurred during authentication. Please try again.')
+      setIsLoading(false)
+    }
   }
 
   const googleLogin = useGoogleLogin({
@@ -142,6 +173,15 @@ function LoginPage({ onLoginSuccess }: LoginPageProps) {
           </div>
 
           <form className="flex flex-col gap-5" onSubmit={handleSubmit} id="login-form">
+
+            {error && (
+              <div className="bg-red-50 text-red-600 border border-red-200 text-xs px-3.5 py-2.5 rounded-lg font-medium flex items-center gap-2 animate-[shake_0.4s_ease-in-out]">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-red-500 shrink-0">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+                </svg>
+                <span>{error}</span>
+              </div>
+            )}
 
             {/* Email */}
             <div className="flex flex-col gap-2">
