@@ -32,7 +32,7 @@ export default function Sidebar({ activeTab, setActiveTab, onLogout }: SidebarPr
         {/* Navigation Links */}
         <nav className="p-3 group-hover:p-4 flex flex-col gap-1.5 transition-all duration-300">
           {[
-            { name: 'Overview', icon: <GridIcon /> },
+            { name: 'Dashboard', icon: <GridIcon /> },
             { name: 'Patients', icon: <PatientsIcon /> },
             { name: 'Appointments', icon: <CalendarIcon /> },
             { name: 'Analytics', icon: <BarChartIcon /> },
@@ -41,11 +41,10 @@ export default function Sidebar({ activeTab, setActiveTab, onLogout }: SidebarPr
             <button
               key={item.name}
               onClick={() => setActiveTab(item.name)}
-              className={`w-full flex items-center justify-center group-hover:justify-start gap-0 group-hover:gap-3.5 px-3 group-hover:px-4 py-3 rounded-xl text-[14.5px] font-semibold transition-all duration-200 cursor-pointer ${
-                activeTab === item.name
+              className={`w-full flex items-center justify-center group-hover:justify-start gap-0 group-hover:gap-3.5 px-3 group-hover:px-4 py-3 rounded-xl text-[14.5px] font-semibold transition-all duration-200 cursor-pointer ${activeTab === item.name
                   ? 'bg-[#1A7A8A] text-white shadow-md shadow-[#1A7A8A]/25'
                   : 'text-white/60 hover:text-white hover:bg-white/5'
-              }`}
+                }`}
             >
               <div className="w-5 h-5 shrink-0 flex items-center justify-center">
                 {item.icon}

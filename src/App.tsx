@@ -1,8 +1,8 @@
 import { lazy, Suspense } from 'react'
-import { useUserLoginData, type UserProfile } from '../store'
+import { useUserLoginData, type UserProfile } from './store'
 
-const Dashboard = lazy(() => import('./Dashboard'))
-const LoginPage = lazy(() => import('./LoginPage'))
+const Dashboard = lazy(() => import('./pages/Dashboard'))
+const LoginPage = lazy(() => import('./pages/LoginPage'))
 
 function App() {
 

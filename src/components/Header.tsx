@@ -4,7 +4,7 @@ import BellIcon from '../assets/icons/BellIcon'
 import AlertTriangleIcon from '../assets/icons/AlertTriangleIcon'
 import CheckCircleIcon from '../assets/icons/CheckCircleIcon'
 import StethoscopeIcon from '../assets/icons/StethoscopeIcon'
-import { type UserProfile, type Patient } from '../types'
+import { type UserProfile, type Patient } from '../types/types'
 import StatusIndicator from './StatusIndicator'
 
 interface HeaderProps {

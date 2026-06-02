@@ -1,5 +1,5 @@
-import { usePatientsStore } from '../../store'
-import { type Patient } from '../types'
+import { usePatientsStore } from '../store'
+import { type Patient } from '../types/types'
 import HeartIcon from '../assets/icons/HeartIcon'
 import BoltIcon from '../assets/icons/BoltIcon'
 import TempIcon from '../assets/icons/TempIcon'

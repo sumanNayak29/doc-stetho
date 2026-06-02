@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react'
-import { type Patient } from '../types'
+import { type Patient } from '../types/types'
 
 interface ConditionsCanvasChartProps {
   patientsList: Patient[]
@@ -64,7 +64,7 @@ export default function ConditionsCanvasChart({ patientsList }: ConditionsCanvas
         const barMaxWidth = width - padLeft - padRight
         const barWidth = (count / maxCount) * barMaxWidth
         const rowY = padTop + idx * rowHeight
-        
+
         // Hover state background highlight
         if (hoverIndex === idx) {
           ctx.fillStyle = 'rgba(241, 245, 249, 0.6)'
@@ -107,7 +107,7 @@ export default function ConditionsCanvasChart({ patientsList }: ConditionsCanvas
         gradient.addColorStop(0, '#1A7A8A')
         gradient.addColorStop(1, '#4DBFBF')
         ctx.fillStyle = gradient
-        
+
         ctx.beginPath()
         if (ctx.roundRect) {
           ctx.roundRect(padLeft, barY, barWidth, barH, 5)

@@ -2,10 +2,10 @@ import SpinnerIcon from '../assets/icons/SpinnerIcon'
 import HeartIcon from '../assets/icons/HeartIcon'
 import BoltIcon from '../assets/icons/BoltIcon'
 import TempIcon from '../assets/icons/TempIcon'
-import { type Patient } from '../types'
+import { type Patient } from '../types/types'
 import StatusIndicator from './StatusIndicator'
 import StarIcon from '../assets/icons/StarIcon'
-import { usePatientsStore } from '../../store'
+import { usePatientsStore } from '../store'
 
 interface PatientTableProps {
   loading: boolean
@@ -58,9 +58,8 @@ export default function PatientTable({
             <tr
               key={patient.id}
               onClick={() => handlePatientClick(patient)}
-              className={`group hover:bg-gray-50/50 transition-colors duration-150 cursor-pointer ${
-                selectedPatientId === patient.id ? 'bg-[#1A7A8A]/10 hover:bg-[#1A7A8A]/15' : ''
-              }`}
+              className={`group hover:bg-gray-50/50 transition-colors duration-150 cursor-pointer ${selectedPatientId === patient.id ? 'bg-[#1A7A8A]/10 hover:bg-[#1A7A8A]/15' : ''
+                }`}
             >
               {/* ID & Name with Avatar */}
               <td className="py-4">
@@ -96,9 +95,8 @@ export default function PatientTable({
                 <div className="flex items-center gap-4 text-xs font-semibold text-gray-500">
                   <span className="flex items-center gap-1">
                     <HeartIcon
-                      className={`w-3.5 h-3.5 ${
-                        patient.vitals.heartRate > 100 ? 'text-red-500 animate-pulse' : 'text-emerald-500'
-                      }`}
+                      className={`w-3.5 h-3.5 ${patient.vitals.heartRate > 100 ? 'text-red-500 animate-pulse' : 'text-emerald-500'
+                        }`}
                     />
                     {patient.vitals.heartRate} bpm
                   </span>
@@ -118,13 +116,12 @@ export default function PatientTable({
               {/* Status Badge */}
               <td className="py-4">
                 <span
-                  className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold ${
-                    patient.status === 'Stable'
-                      ? 'bg-emerald-100 text-emerald-700'
-                      : patient.status === 'Critical'
+                  className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold ${patient.status === 'Stable'
+                    ? 'bg-emerald-100 text-emerald-700'
+                    : patient.status === 'Critical'
                       ? 'bg-red-100 text-red-700'
                       : 'bg-[#EDF3F8] text-[#1A7A8A]'
-                  }`}
+                    }`}
                 >
                   {patient.status === 'Critical' && (
                     <StatusIndicator color="red" size="sm" pulse={true} className="mr-1" />
@@ -140,11 +137,10 @@ export default function PatientTable({
                     e.stopPropagation()
                     togglePriority(patient.id)
                   }}
-                  className={`p-2 rounded-xl border transition-all duration-200 cursor-pointer hover:scale-105 ${
-                    priorityPatients[patient.id]
-                      ? 'bg-amber-50 border-amber-200 text-amber-500 hover:bg-amber-100/80 shadow-sm shadow-amber-500/10'
-                      : 'border-gray-200/80 text-gray-300 hover:text-gray-400 hover:border-gray-300 hover:bg-gray-50/50'
-                  }`}
+                  className={`p-2 rounded-xl border transition-all duration-200 cursor-pointer hover:scale-105 ${priorityPatients[patient.id]
+                    ? 'bg-amber-50 border-amber-200 text-amber-500 hover:bg-amber-100/80 shadow-sm shadow-amber-500/10'
+                    : 'border-gray-200/80 text-gray-300 hover:text-gray-400 hover:border-gray-300 hover:bg-gray-50/50'
+                    }`}
                   title={priorityPatients[patient.id] ? "Remove from Priority" : "Mark as Priority"}
                 >
                   <StarIcon filled={priorityPatients[patient.id]} className="w-4 h-4" />

@@ -1,16 +1,23 @@
 import { useState } from 'react'
 import { useGoogleLogin } from '@react-oauth/google'
-import MailIcon from './assets/icons/MailIcon'
-import LockIcon from './assets/icons/LockIcon'
-import EyeIcon from './assets/icons/EyeIcon'
-import EyeOffIcon from './assets/icons/EyeOffIcon'
-import CheckCircleIcon from './assets/icons/CheckCircleIcon'
-import BarChartIcon from './assets/icons/BarChartIcon'
-import ArrowRightIcon from './assets/icons/ArrowRightIcon'
-import DocStethoIcon from './assets/icons/DocStethoIcon'
-import GoogleLogoIcon from './assets/icons/GoogleLogoIcon'
-import CheckIcon from './assets/icons/CheckIcon'
+import MailIcon from '../assets/icons/MailIcon'
+import LockIcon from '../assets/icons/LockIcon'
+import EyeIcon from '../assets/icons/EyeIcon'
+import EyeOffIcon from '../assets/icons/EyeOffIcon'
+import CheckCircleIcon from '../assets/icons/CheckCircleIcon'
+import BarChartIcon from '../assets/icons/BarChartIcon'
+import ArrowRightIcon from '../assets/icons/ArrowRightIcon'
+import DocStethoIcon from '../assets/icons/DocStethoIcon'
+import GoogleLogoIcon from '../assets/icons/GoogleLogoIcon'
+import CheckIcon from '../assets/icons/CheckIcon'
 
+
+interface DoctorRecord {
+  name: string
+  email: string
+  password?: string
+  picture?: string
+}
 
 interface LoginPageProps {
   onLoginSuccess: (user: { name: string; email: string; picture?: string }) => void
@@ -38,7 +45,7 @@ function LoginPage({ onLoginSuccess }: LoginPageProps) {
 
       // Find the doctor matching the entered email (case-insensitive)
       const doctor = doctors.find(
-        (doc: any) => doc.email?.toLowerCase() === email.trim().toLowerCase()
+        (doc: DoctorRecord) => doc.email?.toLowerCase() === email.trim().toLowerCase()
       )
 
       if (!doctor) {

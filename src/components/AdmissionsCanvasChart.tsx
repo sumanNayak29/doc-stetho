@@ -1,14 +1,14 @@
 import { useRef, useEffect, useState } from 'react'
 
+const admissionsData = [10, 15, 12, 19, 15, 22, 18, 14, 16, 21, 17, 23, 19, 20]
+const days = ['May 18', 'May 19', 'May 20', 'May 21', 'May 22', 'May 23', 'May 24', 'May 25', 'May 26', 'May 27', 'May 28', 'May 29', 'May 30', 'May 31']
+const maxAdmission = 25
+const strokeColor = '#1A7A8A'
+
 export default function AdmissionsCanvasChart() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [hoverIndex, setHoverIndex] = useState<number | null>(null)
-
-  const admissionsData = [10, 15, 12, 19, 15, 22, 18, 14, 16, 21, 17, 23, 19, 20]
-  const days = ['May 18', 'May 19', 'May 20', 'May 21', 'May 22', 'May 23', 'May 24', 'May 25', 'May 26', 'May 27', 'May 28', 'May 29', 'May 30', 'May 31']
-  const maxAdmission = 25
-  const strokeColor = '#1A7A8A'
 
   useEffect(() => {
     const canvas = canvasRef.current

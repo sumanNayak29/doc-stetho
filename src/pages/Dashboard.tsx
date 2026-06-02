@@ -1,19 +1,19 @@
 import { useState, useEffect } from 'react'
-import UsersGroupIcon from './assets/icons/UsersGroupIcon'
-import AlertTriangleIcon from './assets/icons/AlertTriangleIcon'
-import ShieldCheckIcon from './assets/icons/ShieldCheckIcon'
+import UsersGroupIcon from '../assets/icons/UsersGroupIcon'
+import AlertTriangleIcon from '../assets/icons/AlertTriangleIcon'
+import ShieldCheckIcon from '../assets/icons/ShieldCheckIcon'
 
-import { type UserProfile, type Patient } from './types'
-import AdmissionsCanvasChart from './components/AdmissionsCanvasChart'
-import ConditionsCanvasChart from './components/ConditionsCanvasChart'
-import DiseaseDoughnutChart from './components/DiseaseDoughnutChart'
-import Sidebar from './components/Sidebar'
-import Header from './components/Header'
-import PatientTable from './components/PatientTable'
-import PatientDetailsPane from './components/PatientDetailsPane'
-import PriorityWatchlist from './components/PriorityWatchlist'
+import { type UserProfile, type Patient } from '../types/types'
+import AdmissionsCanvasChart from '../components/AdmissionsCanvasChart'
+import ConditionsCanvasChart from '../components/ConditionsCanvasChart'
+import DiseaseDoughnutChart from '../components/DiseaseDoughnutChart'
+import Sidebar from '../components/Sidebar'
+import Header from '../components/Header'
+import PatientTable from '../components/PatientTable'
+import PatientDetailsPane from '../components/PatientDetailsPane'
+import PriorityWatchlist from '../components/PriorityWatchlist'
 import { useAppointmentsStore, usePatientsStore, useSettingsStore } from '../store'
-import StatusIndicator from './components/StatusIndicator'
+import StatusIndicator from '../components/StatusIndicator'
 
 interface DashboardProps {
   user: UserProfile
@@ -21,7 +21,7 @@ interface DashboardProps {
 }
 
 function Dashboard({ user, onLogout }: DashboardProps) {
-  const [activeTab, setActiveTab] = useState('Overview')
+  const [activeTab, setActiveTab] = useState('Dashboard')
   const [searchQuery, setSearchQuery] = useState('')
 
   const [patients, setPatients] = useState<Patient[]>([])
@@ -202,7 +202,7 @@ function Dashboard({ user, onLogout }: DashboardProps) {
 
         {/* Dashboard Grid Content */}
         <main className="flex-1 p-8 flex flex-col gap-8">
-          {activeTab === 'Overview' && (
+          {activeTab === 'Dashboard' && (
             <>
               {/* Stats Cards */}
               <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

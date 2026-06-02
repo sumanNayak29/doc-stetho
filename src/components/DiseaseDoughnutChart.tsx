@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { type Patient } from '../types'
+import { type Patient } from '../types/types'
 import StatusIndicator from './StatusIndicator'
-import { usePatientsStore } from '../../store'
+import { usePatientsStore } from '../store'
 import StarIcon from '../assets/icons/StarIcon'
 
 interface DiseaseDoughnutChartProps {
@@ -89,8 +89,6 @@ export default function DiseaseDoughnutChart({
   const radius = 72
   const strokeWidth = 22
 
-  let accumulatedPercent = 0
-
   const getCoordinatesForPercent = (percent: number, r: number) => {
     // Offset by -0.25 to start drawing from 12 o'clock
     const angle = 2 * Math.PI * (percent - 0.25)
@@ -99,12 +97,18 @@ export default function DiseaseDoughnutChart({
     return [x, y]
   }
 
+  const runningPercents: { start: number; percent: number }[] = []
+  let currentAccumulator = 0
+  for (const item of chartData) {
+    const percent = item.count / totalPatients
+    runningPercents.push({ start: currentAccumulator, percent })
+    currentAccumulator += percent
+  }
+
   // Prepare slices data
   const slices = chartData.map((item, idx) => {
-    const percent = item.count / totalPatients
-    const startPercent = accumulatedPercent
-    const endPercent = accumulatedPercent + percent
-    accumulatedPercent = endPercent
+    const { start: startPercent, percent } = runningPercents[idx]
+    const endPercent = startPercent + percent
 
     const isHovered = hoveredIndex === idx
     const isSelected = safeSelectedIndex === idx

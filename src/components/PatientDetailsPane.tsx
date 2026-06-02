@@ -1,12 +1,12 @@
 import { useRef } from 'react'
-import { type Patient } from '../types'
+import { type Patient } from '../types/types'
 import HeartIcon from '../assets/icons/HeartIcon'
 import BoltIcon from '../assets/icons/BoltIcon'
 import TempIcon from '../assets/icons/TempIcon'
 import VitalsCanvasChart from './VitalsCanvasChart'
 import StatusIndicator from './StatusIndicator'
 import StarIcon from '../assets/icons/StarIcon'
-import { usePatientsStore } from '../../store'
+import { usePatientsStore } from '../store'
 import PulseLiveChart from './PulseLiveChart'
 
 interface PatientDetailsPaneProps {
@@ -72,22 +72,20 @@ export default function PatientDetailsPane({
             <h4 className="text-[17px] font-extrabold text-[#1B2D5E] leading-snug truncate">{patient.name}</h4>
             <button
               onClick={() => togglePriority(patient.id)}
-              className={`p-1 rounded-lg transition-all duration-150 cursor-pointer ${
-                priorityPatients[patient.id]
-                  ? 'text-amber-500 hover:scale-110'
-                  : 'text-gray-300 hover:text-amber-500 hover:scale-110'
-              }`}
+              className={`p-1 rounded-lg transition-all duration-150 cursor-pointer ${priorityPatients[patient.id]
+                ? 'text-amber-500 hover:scale-110'
+                : 'text-gray-300 hover:text-amber-500 hover:scale-110'
+                }`}
               title={priorityPatients[patient.id] ? "Remove from Priority" : "Mark as Priority"}
             >
               <StarIcon filled={priorityPatients[patient.id]} className="w-4 h-4" />
             </button>
-            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold ${
-              patient.status === 'Stable'
-                ? 'bg-emerald-100 text-emerald-700'
-                : patient.status === 'Critical'
-                  ? 'bg-red-100 text-red-700'
-                  : 'bg-[#EDF3F8] text-[#1A7A8A]'
-            }`}>
+            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold ${patient.status === 'Stable'
+              ? 'bg-emerald-100 text-emerald-700'
+              : patient.status === 'Critical'
+                ? 'bg-red-100 text-red-700'
+                : 'bg-[#EDF3F8] text-[#1A7A8A]'
+              }`}>
               {patient.status === 'Critical' && (
                 <StatusIndicator color="red" size="sm" pulse={true} className="mr-0.5" />
               )}
@@ -144,7 +142,7 @@ export default function PatientDetailsPane({
           <span className="text-[14px] font-extrabold text-[#1B2D5E]">{patient.vitals.temp} <span className="text-[10px] font-semibold text-gray-400">°F</span></span>
         </div>
       </div>
-      
+
       {/* Vitals Timeline Canvas Chart */}
       <div className="flex flex-col gap-2">
         <div className="flex justify-between items-center mb-1">

@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react'
-import { type Patient } from '../types'
+import { type Patient } from '../types/types'
 
 interface VitalsCanvasChartProps {
   patient: Patient
