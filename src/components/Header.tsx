@@ -3,6 +3,7 @@ import SearchIcon from '../assets/icons/SearchIcon'
 import BellIcon from '../assets/icons/BellIcon'
 import AlertTriangleIcon from '../assets/icons/AlertTriangleIcon'
 import CheckCircleIcon from '../assets/icons/CheckCircleIcon'
+import StethoscopeIcon from '../assets/icons/StethoscopeIcon'
 import { type UserProfile, type Patient } from '../types'
 import StatusIndicator from './StatusIndicator'
 
@@ -10,6 +11,7 @@ interface HeaderProps {
   user: UserProfile
   searchQuery: string
   setSearchQuery: (query: string) => void
+  activeTab: string
   patientsList?: Patient[]
   onPatientClick?: (patient: Patient) => void
   offlineMode?: boolean
@@ -27,7 +29,8 @@ export default function Header({
   setSearchQuery,
   patientsList = [],
   onPatientClick,
-  offlineMode = false
+  offlineMode = false,
+  activeTab
 }: HeaderProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -56,7 +59,7 @@ export default function Header({
 
   // Get current critical cases as dynamic notifications
   const criticalPatients = patientsList.filter(p => p.status === 'Critical')
-  
+
   // Unread notifications are those critical patient IDs not yet marked as read
   const unreadNotifications = criticalPatients.filter(p => !readIds.includes(p.id))
   const unreadCount = unreadNotifications.length
@@ -100,11 +103,7 @@ export default function Header({
       <div className="flex flex-col">
         <h2 className="text-[20px] font-extrabold tracking-tight text-[#1B2D5E] flex items-center gap-2">
           Welcome, Dr. {user.name.split(' ')[0]}
-          {offlineMode ? (
-            <StatusIndicator color="gray" size="lg" pulse={false} title="Offline Mode Active" />
-          ) : (
-            <StatusIndicator color="emerald" size="lg" title="Online" />
-          )}
+          <StethoscopeIcon className="w-5 h-5 text-[#1A7A8A] shrink-0" />
         </h2>
         <p className="text-xs text-gray-500 font-medium">
           {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' })}
@@ -114,28 +113,32 @@ export default function Header({
       {/* Search and Action Bar */}
       <div className="flex items-center gap-6">
         {/* Search Box */}
-        <div className="relative flex items-center hidden sm:flex">
-          <span className="absolute left-3.5 text-gray-400">
-            <SearchIcon />
-          </span>
-          <input
-            type="text"
-            placeholder="Search patient, diagnosis..."
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            className="w-64 h-[40px] pl-10 pr-4 rounded-xl border border-gray-200 bg-[#EDF3F8]/50 text-sm text-[#1B2D5E] placeholder-gray-400 focus:outline-none focus:border-[#4DBFBF] focus:bg-white transition-all duration-200"
-          />
-        </div>
+        {
+          activeTab === 'Patients' &&
+          <div className="relative flex items-center hidden sm:flex">
+            <span className="absolute left-3.5 text-gray-400">
+              <SearchIcon />
+            </span>
+            <input
+              type="text"
+              placeholder="Search patient, diagnosis..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              className="w-64 h-[40px] pl-10 pr-4 rounded-xl border border-gray-200 bg-[#EDF3F8]/50 text-sm text-[#1B2D5E] placeholder-gray-400 focus:outline-none focus:border-[#4DBFBF] focus:bg-white transition-all duration-200"
+            />
+          </div>
+
+        }
+
 
         {/* Notification Icon and Dropdown */}
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className={`relative w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-200 cursor-pointer ${
-              dropdownOpen 
-                ? 'bg-[#1A7A8A]/10 text-[#1A7A8A] border border-[#1A7A8A]/20' 
-                : 'bg-gray-100/80 hover:bg-gray-100 border border-transparent text-gray-600'
-            }`}
+            className={`relative w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-200 cursor-pointer ${dropdownOpen
+              ? 'bg-[#1A7A8A]/10 text-[#1A7A8A] border border-[#1A7A8A]/20'
+              : 'bg-gray-100/80 hover:bg-gray-100 border border-transparent text-gray-600'
+              }`}
             title="View Alerts"
           >
             <BellIcon />
@@ -174,11 +177,10 @@ export default function Header({
                       <div
                         key={patient.id}
                         onClick={() => handleNotificationClick(patient)}
-                        className={`group flex items-start gap-3 p-3 rounded-xl cursor-pointer border transition-all duration-150 ${
-                          isUnread
-                            ? 'bg-red-50/20 hover:bg-red-50/40 border-red-100/50'
-                            : 'bg-gray-50/40 hover:bg-gray-50/90 border-transparent'
-                        }`}
+                        className={`group flex items-start gap-3 p-3 rounded-xl cursor-pointer border transition-all duration-150 ${isUnread
+                          ? 'bg-red-50/20 hover:bg-red-50/40 border-red-100/50'
+                          : 'bg-gray-50/40 hover:bg-gray-50/90 border-transparent'
+                          }`}
                       >
                         <div className={`p-1.5 rounded-lg mt-0.5 shrink-0 ${isUnread ? 'bg-red-100 text-red-600 animate-pulse' : 'bg-gray-100 text-gray-400'}`}>
                           <AlertTriangleIcon className="w-4 h-4" />

@@ -197,6 +197,7 @@ function Dashboard({ user, onLogout }: DashboardProps) {
           patientsList={patients}
           onPatientClick={handlePatientClick}
           offlineMode={offlineMode}
+          activeTab={activeTab}
         />
 
         {/* Dashboard Grid Content */}
