@@ -145,8 +145,13 @@ function Dashboard({ user, onLogout }: DashboardProps) {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-y-auto min-w-0 scrollbar-hide">
-        {/* Header Bar */}
-        <Header user={user} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+        <Header
+          user={user}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          patientsList={patients}
+          onPatientClick={handlePatientClick}
+        />
 
         {/* Dashboard Grid Content */}
         <main className="flex-1 p-8 flex flex-col gap-8">
