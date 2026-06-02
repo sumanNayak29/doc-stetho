@@ -362,14 +362,6 @@ function Dashboard({ user, onLogout }: DashboardProps) {
                 </div>
               </div>
 
-              {/* Disease breakdown doughnut chart and matching patient list */}
-              {!loading && (
-                <DiseaseDoughnutChart
-                  patientsList={patients}
-                  onPatientClick={handlePatientClick}
-                  patientPictures={patientPictures}
-                />
-              )}
             </>
           )}
 
