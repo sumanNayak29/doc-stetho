@@ -26,6 +26,20 @@ export const useBoundStore = create<BoundStore>()(
     )
 )
 
+// Subscribe to store changes to reset user-specific data on logout
+let previousUser = useBoundStore.getState().userLoginData
+useBoundStore.subscribe((state) => {
+    const currentUser = state.userLoginData
+    const wasLoggedIn = previousUser && !currentUser
+    previousUser = currentUser
+    if (wasLoggedIn) {
+        state.resetAppointmentStatuses()
+        state.resetPriorityPatients()
+    }
+})
+
+
+
 // ─── Re-export types ──────────────────────────────────────────────────────────
 
 export type { UserProfile, AppointmentStatus }
