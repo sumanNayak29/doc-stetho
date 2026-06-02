@@ -265,10 +265,9 @@ function Dashboard({ user, onLogout }: DashboardProps) {
                       <AdmissionsCanvasChart />
                     </div>
                   </div>
-
-                  {/* Disease breakdown doughnut chart and matching patient list */}
+                  {/* Priority Watchlist Panel */}
                   {!loading && (
-                    <DiseaseDoughnutChart
+                    <PriorityWatchlist
                       patientsList={patients}
                       onPatientClick={handlePatientClick}
                       patientPictures={patientPictures}
@@ -292,7 +291,7 @@ function Dashboard({ user, onLogout }: DashboardProps) {
                       ) : error ? (
                         <div className="text-center py-6 text-sm text-red-500 font-medium">Error loading schedule</div>
                       ) : patients.length > 0 ? (
-                        patients.slice(0, 4).map((appointment, idx) => {
+                        patients.slice(0, 5).map((appointment, idx) => {
                           const status = appointmentStatuses[appointment.id] || 'pending'
 
                           let dotColorClass = 'bg-[#1A7A8A]'
@@ -356,17 +355,18 @@ function Dashboard({ user, onLogout }: DashboardProps) {
                     </div>
                   </div>
 
-                  {/* Priority Watchlist Panel */}
-                  {!loading && (
-                    <PriorityWatchlist
-                      patientsList={patients}
-                      onPatientClick={handlePatientClick}
-                      patientPictures={patientPictures}
-                    />
-                  )}
+
                 </div>
               </div>
 
+              {/* Disease breakdown doughnut chart and matching patient list */}
+              {!loading && (
+                <DiseaseDoughnutChart
+                  patientsList={patients}
+                  onPatientClick={handlePatientClick}
+                  patientPictures={patientPictures}
+                />
+              )}
             </>
           )}
 

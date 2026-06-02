@@ -34,9 +34,9 @@ export default function PriorityWatchlist({
       </div>
 
       {watchlistedPatients.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-8 px-4 text-center border-2 border-dashed border-gray-200/85 rounded-2xl bg-gray-50/30">
-          <div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center mb-3">
-            <StarIcon className="w-6 h-6 text-amber-400" />
+        <div className="flex flex-col items-center justify-center py-[16px] px-4 text-center border-2 border-dashed border-gray-200/85 rounded-2xl bg-gray-50/30">
+          <div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center mb-[8px]">
+            <StarIcon className="w-5 h-5 text-amber-400" />
           </div>
           <span className="text-[13.5px] font-bold text-[#1B2D5E] mb-1">Watchlist Empty</span>
           <p className="text-[12px] text-gray-400 max-w-[240px] font-medium leading-relaxed">
