@@ -12,7 +12,7 @@ import Header from './components/Header'
 import PatientTable from './components/PatientTable'
 import PatientDetailsPane from './components/PatientDetailsPane'
 import PriorityWatchlist from './components/PriorityWatchlist'
-import { useAppointmentsStore, usePatientsStore } from '../store'
+import { useAppointmentsStore, usePatientsStore, useSettingsStore } from '../store'
 import StatusIndicator from './components/StatusIndicator'
 
 interface DashboardProps {
@@ -38,6 +38,25 @@ function Dashboard({ user, onLogout }: DashboardProps) {
 
   const [selectedApptId, setSelectedApptId] = useState<string | null>(null)
   const { priorityPatients } = usePatientsStore()
+  const {
+    emailNotifications,
+    criticalAlerts,
+    offlineMode,
+    setEmailNotifications,
+    setCriticalAlerts,
+    setOfflineMode
+  } = useSettingsStore()
+
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' } | null>(null)
+
+  // Auto-dismiss toast
+  useEffect(() => {
+    if (!toast) return
+    const timer = setTimeout(() => setToast(null), 3000)
+    return () => clearTimeout(timer)
+  }, [toast])
+
+
   const [statusFilter, setStatusFilter] = useState<string>('All')
   const [priorityFilter, setPriorityFilter] = useState<string>('All')
   const [genderFilter, setGenderFilter] = useState<string>('All')
@@ -70,14 +89,40 @@ function Dashboard({ user, onLogout }: DashboardProps) {
     const controller = new AbortController();
 
     const fetchPatients = async () => {
+      // 1. If offlineMode is enabled, try loading from cache first
+      const cached = localStorage.getItem('docstetho_cached_patients')
+      if (offlineMode && cached) {
+        try {
+          const parsed = JSON.parse(cached)
+          setPatients(parsed)
+          setLoading(false)
+          return
+        } catch {
+          // ignore cache error and fetch
+        }
+      }
+
       try {
         const response = await fetch('/mockdatabase/patient_data.json', { signal: controller.signal });
         if (!response.ok) throw new Error('Failed to fetch patient data');
 
         const data = await response.json();
         setPatients(data);
+        // Cache the patient database
+        localStorage.setItem('docstetho_cached_patients', JSON.stringify(data))
       } catch (err) {
         if (err instanceof Error && err.name !== 'AbortError') {
+          // Fallback to cache if request fails
+          if (cached) {
+            try {
+              const parsed = JSON.parse(cached)
+              setPatients(parsed)
+              setToast({ message: "Network offline: Loaded from cache.", type: "info" })
+              return
+            } catch {
+              // ignore
+            }
+          }
           setError(err.message || 'Something went wrong');
         }
       } finally {
@@ -88,7 +133,7 @@ function Dashboard({ user, onLogout }: DashboardProps) {
     fetchPatients();
 
     return () => controller.abort();
-  }, []);
+  }, [offlineMode]);
 
   // Filter & Sort patient list
   const filteredPatients = (() => {
@@ -151,6 +196,7 @@ function Dashboard({ user, onLogout }: DashboardProps) {
           setSearchQuery={setSearchQuery}
           patientsList={patients}
           onPatientClick={handlePatientClick}
+          offlineMode={offlineMode}
         />
 
         {/* Dashboard Grid Content */}
@@ -743,27 +789,72 @@ function Dashboard({ user, onLogout }: DashboardProps) {
                     <span className="text-sm font-bold text-[#1B2D5E]">Email Notifications</span>
                     <p className="text-xs text-gray-400 font-medium">Receive daily schedule summaries via email</p>
                   </div>
-                  <input type="checkbox" defaultChecked className="accent-[#1A7A8A]" />
+                  <input
+                    type="checkbox"
+                    checked={emailNotifications}
+                    onChange={(e) => {
+                      setEmailNotifications(e.target.checked)
+                      setToast({
+                        message: e.target.checked
+                          ? `Email notifications enabled for ${user.email}`
+                          : "Email notifications disabled",
+                        type: "success"
+                      })
+                    }}
+                    className="accent-[#1A7A8A] h-5 w-5 rounded cursor-pointer"
+                  />
                 </div>
                 <div className="py-4 flex justify-between items-center">
                   <div>
                     <span className="text-sm font-bold text-[#1B2D5E]">Critical Alerts</span>
-                    <p className="text-xs text-gray-400 font-medium">Sound alert when a patient vital is critical</p>
+                    <p className="text-xs text-gray-400 font-medium">Show alert when a patient vital is critical</p>
                   </div>
-                  <input type="checkbox" defaultChecked className="accent-[#1A7A8A]" />
+                  <input
+                    type="checkbox"
+                    checked={criticalAlerts}
+                    onChange={(e) => {
+                      setCriticalAlerts(e.target.checked)
+                      setToast({
+                        message: e.target.checked ? "Critical alerts enabled" : "Critical alerts disabled",
+                        type: "success"
+                      })
+                    }}
+                    className="accent-[#1A7A8A] h-5 w-5 rounded cursor-pointer"
+                  />
                 </div>
                 <div className="py-4 flex justify-between items-center">
                   <div>
                     <span className="text-sm font-bold text-[#1B2D5E]">Offline Mode</span>
                     <p className="text-xs text-gray-400 font-medium">Keep database cached for offline view</p>
                   </div>
-                  <input type="checkbox" className="accent-[#1A7A8A]" />
+                  <input
+                    type="checkbox"
+                    checked={offlineMode}
+                    onChange={(e) => {
+                      setOfflineMode(e.target.checked)
+                      setToast({
+                        message: e.target.checked
+                          ? "Offline mode enabled: Database cached"
+                          : "Offline mode disabled",
+                        type: "success"
+                      })
+                    }}
+                    className="accent-[#1A7A8A] h-5 w-5 rounded cursor-pointer"
+                  />
                 </div>
               </div>
             </div>
           )}
         </main>
       </div>
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className="fixed bottom-6 right-6 bg-white/80 backdrop-blur-xl border border-white/60 shadow-[0_8px_32px_rgba(27,45,94,0.08)] px-5 py-3 rounded-2xl flex items-center gap-3 z-50 animate-[slideUp_0.18s_ease_both] border-[#1A7A8A]/20">
+          <div className={`w-2 h-2 rounded-full ${toast.type === 'success' ? 'bg-emerald-500 animate-pulse' : 'bg-[#1A7A8A]'}`} />
+          <span className="text-[13px] font-bold text-[#1B2D5E]">{toast.message}</span>
+        </div>
+      )}
     </div>
   )
 }

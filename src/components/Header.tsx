@@ -12,6 +12,7 @@ interface HeaderProps {
   setSearchQuery: (query: string) => void
   patientsList?: Patient[]
   onPatientClick?: (patient: Patient) => void
+  offlineMode?: boolean
 }
 
 const getInitials = (name: string) => {
@@ -25,7 +26,8 @@ export default function Header({
   searchQuery,
   setSearchQuery,
   patientsList = [],
-  onPatientClick
+  onPatientClick,
+  offlineMode = false
 }: HeaderProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -98,7 +100,11 @@ export default function Header({
       <div className="flex flex-col">
         <h2 className="text-[20px] font-extrabold tracking-tight text-[#1B2D5E] flex items-center gap-2">
           Welcome, Dr. {user.name.split(' ')[0]}
-          <StatusIndicator color="emerald" size="lg" title="Online" />
+          {offlineMode ? (
+            <StatusIndicator color="gray" size="lg" pulse={false} title="Offline Mode Active" />
+          ) : (
+            <StatusIndicator color="emerald" size="lg" title="Online" />
+          )}
         </h2>
         <p className="text-xs text-gray-500 font-medium">
           {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' })}
@@ -225,7 +231,11 @@ export default function Header({
           <div className="flex flex-col hidden lg:flex">
             <div className="flex items-center gap-1.5 mb-1">
               <span className="text-[14px] font-bold text-[#1B2D5E] leading-none">{user.name}</span>
-              <StatusIndicator color="emerald" size="md" title="Online" />
+              {offlineMode ? (
+                <StatusIndicator color="gray" size="md" pulse={false} title="Offline Mode Active" />
+              ) : (
+                <StatusIndicator color="emerald" size="md" title="Online" />
+              )}
             </div>
             <span className="text-[11px] text-gray-400 font-medium leading-none">{user.email}</span>
           </div>

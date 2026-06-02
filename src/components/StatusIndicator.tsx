@@ -1,5 +1,5 @@
 interface StatusIndicatorProps {
-  color?: 'emerald' | 'red' | 'amber' | 'blue' | 'indigo'
+  color?: 'emerald' | 'red' | 'amber' | 'blue' | 'indigo' | 'gray'
   size?: 'sm' | 'md' | 'lg'
   pulse?: boolean
   className?: string
@@ -18,7 +18,8 @@ export default function StatusIndicator({
     red: 'bg-red-500',
     amber: 'bg-amber-500',
     blue: 'bg-blue-500',
-    indigo: 'bg-indigo-500'
+    indigo: 'bg-indigo-500',
+    gray: 'bg-gray-400'
   }
 
   const pingColors = {
@@ -26,7 +27,8 @@ export default function StatusIndicator({
     red: 'bg-red-400',
     amber: 'bg-amber-400',
     blue: 'bg-blue-400',
-    indigo: 'bg-indigo-400'
+    indigo: 'bg-indigo-400',
+    gray: 'bg-gray-300'
   }
 
   const sizes = {
