@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import CalendarIcon from './assets/icons/CalendarIcon'
 import UsersGroupIcon from './assets/icons/UsersGroupIcon'
 import AlertTriangleIcon from './assets/icons/AlertTriangleIcon'
 import ShieldCheckIcon from './assets/icons/ShieldCheckIcon'
@@ -7,14 +6,13 @@ import ShieldCheckIcon from './assets/icons/ShieldCheckIcon'
 import { type UserProfile, type Patient } from './types'
 import AdmissionsCanvasChart from './components/AdmissionsCanvasChart'
 import ConditionsCanvasChart from './components/ConditionsCanvasChart'
+import DiseaseDoughnutChart from './components/DiseaseDoughnutChart'
 import Sidebar from './components/Sidebar'
 import Header from './components/Header'
 import PatientTable from './components/PatientTable'
 import PatientDetailsPane from './components/PatientDetailsPane'
 import { useAppointmentsStore, usePatientsStore } from '../store'
 import StatusIndicator from './components/StatusIndicator'
-import VitalsCanvasChart from './components/VitalsCanvasChart'
-import PulseLiveChart from './components/PulseLiveChart'
 
 interface DashboardProps {
   user: UserProfile
@@ -31,6 +29,12 @@ function Dashboard({ user, onLogout }: DashboardProps) {
 
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null)
   const { appointmentStatuses, setAppointmentStatus } = useAppointmentsStore()
+  const todayCount = Math.min(18, patients.length)
+  const todayAppointments = patients.slice(0, todayCount)
+  const attendedCount = todayAppointments.filter(p => appointmentStatuses[p.id] === 'attended').length
+  const rejectedCount = todayAppointments.filter(p => appointmentStatuses[p.id] === 'rejected').length
+  const pendingCount = todayAppointments.filter(p => !appointmentStatuses[p.id] || appointmentStatuses[p.id] === 'pending').length
+
   const [selectedApptId, setSelectedApptId] = useState<string | null>(null)
   const { priorityPatients } = usePatientsStore()
   const [statusFilter, setStatusFilter] = useState<string>('All')
@@ -151,7 +155,70 @@ function Dashboard({ user, onLogout }: DashboardProps) {
               <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
                   { title: 'Total Patients', value: loading ? '...' : patients.length.toLocaleString(), change: loading ? '...' : 'Live database count', isPos: true, icon: <UsersGroupIcon className="w-6 h-6 text-[#1A7A8A]" />, color: 'from-[#1A7A8A]/10 to-[#1A7A8A]/5', onClick: () => setActiveTab('Patients') },
-                  { title: 'Today Appointments', value: loading ? '...' : Math.min(18, patients.length).toString(), change: loading ? '...' : 'Derived from schedule', isPos: true, icon: <CalendarIcon className="w-6 h-6 text-[#4DBFBF]" strokeWidth={2.5} />, color: 'from-[#4DBFBF]/10 to-[#4DBFBF]/5', onClick: () => setActiveTab('Appointments') },
+                  {
+                    title: 'Today Appointments',
+                    value: loading ? '...' : Math.min(18, patients.length).toString(),
+                    change: loading ? '...' : `${attendedCount} attended · ${rejectedCount} rejected`,
+                    isPos: true,
+                    customVisual: (
+                      <div className="relative w-12 h-12 flex items-center justify-center shrink-0">
+                        <span className="absolute text-[10px] font-black text-[#1B2D5E] z-10">
+                          {attendedCount + rejectedCount}
+                        </span>
+                        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                          <circle
+                            cx="50"
+                            cy="50"
+                            r="38"
+                            stroke="#E2E8F0"
+                            strokeWidth="10"
+                            fill="transparent"
+                          />
+                          {attendedCount > 0 && todayCount > 0 && (
+                            <circle
+                              cx="50"
+                              cy="50"
+                              r="38"
+                              stroke="#10B981"
+                              strokeWidth="10"
+                              fill="transparent"
+                              strokeDasharray={`${(attendedCount / todayCount) * 238.76} 238.76`}
+                              strokeDashoffset="0"
+                              strokeLinecap="round"
+                            />
+                          )}
+                          {rejectedCount > 0 && todayCount > 0 && (
+                            <circle
+                              cx="50"
+                              cy="50"
+                              r="38"
+                              stroke="#EF4444"
+                              strokeWidth="10"
+                              fill="transparent"
+                              strokeDasharray={`${(rejectedCount / todayCount) * 238.76} 238.76`}
+                              strokeDashoffset={`${-((attendedCount / todayCount) * 238.76)}`}
+                              strokeLinecap="round"
+                            />
+                          )}
+                          {pendingCount > 0 && todayCount > 0 && (
+                            <circle
+                              cx="50"
+                              cy="50"
+                              r="38"
+                              stroke="#1A7A8A"
+                              strokeWidth="10"
+                              fill="transparent"
+                              strokeDasharray={`${(pendingCount / todayCount) * 238.76} 238.76`}
+                              strokeDashoffset={`${-(((attendedCount + rejectedCount) / todayCount) * 238.76)}`}
+                              strokeLinecap="round"
+                            />
+                          )}
+                        </svg>
+                      </div>
+                    ),
+                    color: 'from-[#4DBFBF]/10 to-[#4DBFBF]/5',
+                    onClick: () => setActiveTab('Appointments')
+                  },
                   { title: 'Critical Cases', value: loading ? '...' : patients.filter(p => p.status === 'Critical').length.toString(), change: loading ? '...' : 'Urgent attention', isPos: false, icon: <AlertTriangleIcon className="w-6 h-6 text-red-500 animate-pulse" />, color: 'from-red-500/10 to-red-500/5' },
                   { title: 'System Status', value: '99.9%', change: 'All nodes healthy', isPos: true, icon: <ShieldCheckIcon className="w-6 h-6 text-emerald-500" />, color: 'from-emerald-500/10 to-emerald-500/5' }
                 ].map(stat => (
@@ -167,24 +234,40 @@ function Dashboard({ user, onLogout }: DashboardProps) {
                         {stat.change}
                       </span>
                     </div>
-                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center`}>
-                      {stat.icon}
-                    </div>
+                    {stat.customVisual ? (
+                      stat.customVisual
+                    ) : (
+                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center`}>
+                        {stat.icon}
+                      </div>
+                    )}
                   </div>
                 ))}
               </section>
 
               {/* Table and Right Sidebar Panels */}
               <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 items-start">
-                {/* Weekly Admissions Trend Chart (Left Side) */}
-                <div className="xl:col-span-2 bg-white/80 backdrop-blur-xl border border-white/60 rounded-2xl p-6 shadow-[0_4px_24px_rgba(27,45,94,0.02)] flex flex-col gap-4 animate-[cardIn_0.3s_ease_both]">
-                  <div>
-                    <h3 className="text-[18px] font-extrabold text-[#1B2D5E] tracking-tight mb-1">Admissions Trend</h3>
-                    <p className="text-[13px] text-gray-400 font-medium">Bi-weekly statistics of new patient check-ins</p>
+                {/* Left Column (Weekly Admissions Trend & Disease Distribution) */}
+                <div className="xl:col-span-2 flex flex-col gap-8">
+                  {/* Weekly Admissions Trend Chart */}
+                  <div className="w-full bg-white/80 backdrop-blur-xl border border-white/60 rounded-2xl p-6 shadow-[0_4px_24px_rgba(27,45,94,0.02)] flex flex-col gap-4 animate-[cardIn_0.3s_ease_both]">
+                    <div>
+                      <h3 className="text-[18px] font-extrabold text-[#1B2D5E] tracking-tight mb-1">Admissions Trend</h3>
+                      <p className="text-[13px] text-gray-400 font-medium">Bi-weekly statistics of new patient check-ins</p>
+                    </div>
+                    <div className="relative bg-gray-50/50 rounded-xl border border-gray-100 p-4">
+                      <AdmissionsCanvasChart />
+                    </div>
                   </div>
-                  <div className="relative bg-gray-50/50 rounded-xl border border-gray-100 p-4">
-                    <AdmissionsCanvasChart />
-                  </div>
+
+                  {/* Disease breakdown doughnut chart and matching patient list */}
+                  {!loading && (
+                    <DiseaseDoughnutChart
+                      patientsList={patients}
+                      onPatientClick={handlePatientClick}
+                      patientPictures={patientPictures}
+                    />
+                  )}
                 </div>
 
                 {/* Today Schedule Panel (Right) */}
@@ -266,6 +349,14 @@ function Dashboard({ user, onLogout }: DashboardProps) {
                 </div>
               </div>
 
+              {/* Disease breakdown doughnut chart and matching patient list */}
+              {!loading && (
+                <DiseaseDoughnutChart
+                  patientsList={patients}
+                  onPatientClick={handlePatientClick}
+                  patientPictures={patientPictures}
+                />
+              )}
             </>
           )}
 
@@ -375,6 +466,99 @@ function Dashboard({ user, onLogout }: DashboardProps) {
                 <h3 className="text-[20px] font-extrabold text-[#1B2D5E] tracking-tight mb-1">Appointments Schedule</h3>
                 <p className="text-[13px] text-gray-400 font-medium">Click on any schedule to attend or reject the appointment</p>
               </div>
+
+              {/* Doughnut Chart Stats */}
+              {!loading && patients.length > 0 && todayCount > 0 && (
+                <div className="bg-gray-50/50 rounded-2xl border border-gray-100 p-6 flex flex-col sm:flex-row items-center justify-around gap-6 animate-[logoGrow_0.4s_ease-out] max-w-xl mx-auto w-full">
+                  {/* SVG Doughnut */}
+                  <div className="relative w-32 h-32 flex items-center justify-center shrink-0">
+                    <div className="absolute flex flex-col items-center justify-center text-center">
+                      <span className="text-2xl font-black text-[#1B2D5E] leading-none">
+                        {todayCount > 0 ? Math.round(((attendedCount + rejectedCount) / todayCount) * 100) : 0}%
+                      </span>
+                      <span className="text-[10px] text-gray-400 font-extrabold uppercase tracking-wide mt-1.5">Processed</span>
+                    </div>
+                    <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="38"
+                        stroke="#E2E8F0"
+                        strokeWidth="10"
+                        fill="transparent"
+                      />
+                      {attendedCount > 0 && (
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="38"
+                          stroke="#10B981"
+                          strokeWidth="10"
+                          fill="transparent"
+                          strokeDasharray={`${(attendedCount / todayCount) * 238.76} 238.76`}
+                          strokeDashoffset="0"
+                          strokeLinecap="round"
+                          className="transition-all duration-500 ease-out"
+                        />
+                      )}
+                      {rejectedCount > 0 && (
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="38"
+                          stroke="#EF4444"
+                          strokeWidth="10"
+                          fill="transparent"
+                          strokeDasharray={`${(rejectedCount / todayCount) * 238.76} 238.76`}
+                          strokeDashoffset={`${-((attendedCount / todayCount) * 238.76)}`}
+                          strokeLinecap="round"
+                          className="transition-all duration-500 ease-out"
+                        />
+                      )}
+                      {pendingCount > 0 && (
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="38"
+                          stroke="#1A7A8A"
+                          strokeWidth="10"
+                          fill="transparent"
+                          strokeDasharray={`${(pendingCount / todayCount) * 238.76} 238.76`}
+                          strokeDashoffset={`${-(((attendedCount + rejectedCount) / todayCount) * 238.76)}`}
+                          strokeLinecap="round"
+                          className="transition-all duration-500 ease-out"
+                        />
+                      )}
+                    </svg>
+                  </div>
+
+                  {/* Legend */}
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center gap-3 group">
+                      <span className="w-3 h-3 rounded-full bg-[#10B981] group-hover:scale-110 transition-transform" />
+                      <div className="flex flex-col">
+                        <span className="text-[13px] font-extrabold text-[#1B2D5E] leading-none mb-0.5">Attended</span>
+                        <span className="text-[11.5px] text-gray-400 font-semibold">{attendedCount} patient{attendedCount !== 1 ? 's' : ''}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 group">
+                      <span className="w-3 h-3 rounded-full bg-[#EF4444] group-hover:scale-110 transition-transform" />
+                      <div className="flex flex-col">
+                        <span className="text-[13px] font-extrabold text-[#1B2D5E] leading-none mb-0.5">Rejected</span>
+                        <span className="text-[11.5px] text-gray-400 font-semibold">{rejectedCount} patient{rejectedCount !== 1 ? 's' : ''}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 group">
+                      <span className="w-3 h-3 rounded-full bg-[#1A7A8A] group-hover:scale-110 transition-transform" />
+                      <div className="flex flex-col">
+                        <span className="text-[13px] font-extrabold text-[#1B2D5E] leading-none mb-0.5">Pending</span>
+                        <span className="text-[11.5px] text-gray-400 font-semibold">{pendingCount} patient{pendingCount !== 1 ? 's' : ''}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
                 {patients.slice(0, 10).map((appointment, idx) => {
                   const status = appointmentStatuses[appointment.id] || 'pending'
@@ -525,6 +709,15 @@ function Dashboard({ user, onLogout }: DashboardProps) {
                   </div>
                 </div>
               </div>
+
+              {/* Disease breakdown doughnut chart and matching patient list */}
+              {!loading && (
+                <DiseaseDoughnutChart
+                  patientsList={patients}
+                  onPatientClick={handlePatientClick}
+                  patientPictures={patientPictures}
+                />
+              )}
             </div>
           )}
 
