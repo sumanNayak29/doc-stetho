@@ -108,7 +108,7 @@ export default function DiseaseDoughnutChart({
 
     const isHovered = hoveredIndex === idx
     const isSelected = safeSelectedIndex === idx
-    
+
     // Slices visual popout factor when hovered or selected
     const activeRadius = isHovered ? radius + 5 : isSelected ? radius + 2 : radius
     const activeStroke = isHovered ? strokeWidth + 4 : isSelected ? strokeWidth + 1 : strokeWidth
@@ -140,8 +140,8 @@ export default function DiseaseDoughnutChart({
   const activeHoverSlice = hoveredIndex !== null ? slices[hoveredIndex] : null
   const displayLabel = activeHoverSlice ? activeHoverSlice.name : 'Total Patients'
   const displayValue = activeHoverSlice ? activeHoverSlice.count : totalPatients
-  const displaySubtext = activeHoverSlice 
-    ? `${(activeHoverSlice.percent * 100).toFixed(1)}% of cases` 
+  const displaySubtext = activeHoverSlice
+    ? `${(activeHoverSlice.percent * 100).toFixed(1)}% of cases`
     : 'Across all diagnoses'
 
   return (
@@ -157,9 +157,9 @@ export default function DiseaseDoughnutChart({
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
         {/* Left Column: SVG Doughnut + Legend */}
-        <div className="lg:col-span-5 flex flex-col sm:flex-row items-center justify-center gap-6 border-r border-gray-100/80 pr-0 lg:pr-8">
+        <div className="lg:col-span-6 flex flex-col sm:flex-row items-center justify-center gap-6 border-r border-gray-100/80 pr-0 lg:pr-8">
           {/* SVG Container */}
-          <div className="relative w-[220px] h-[220px] shrink-0">
+          <div className="relative w-[270px] h-[270px] shrink-0">
             {/* Center Info Text */}
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 pointer-events-none select-none z-10">
               <span className="text-[10px] text-gray-400 font-extrabold uppercase tracking-wider mb-1 truncate max-w-[130px]">
@@ -174,9 +174,9 @@ export default function DiseaseDoughnutChart({
             </div>
 
             {/* SVG Arc rendering */}
-            <svg 
-              width="220" 
-              height="220" 
+            <svg
+              width="220"
+              height="220"
               viewBox="0 0 220 220"
               className="w-full h-full block"
             >
@@ -241,16 +241,15 @@ export default function DiseaseDoughnutChart({
                   onClick={() => setSelectedIndex(idx)}
                   onMouseEnter={() => setHoveredIndex(idx)}
                   onMouseLeave={() => setHoveredIndex(null)}
-                  className={`flex items-center justify-between p-2 rounded-xl cursor-pointer transition-all duration-200 border ${
-                    isSelected
-                      ? 'bg-gray-50 border-gray-200 shadow-sm scale-[1.02]'
-                      : 'border-transparent hover:bg-gray-50/50'
-                  }`}
+                  className={`flex items-center justify-between p-2 rounded-xl cursor-pointer transition-all duration-200 border ${isSelected
+                    ? 'bg-gray-50 border-gray-200 shadow-sm scale-[1.02]'
+                    : 'border-transparent hover:bg-gray-50/50'
+                    }`}
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <span 
+                    <span
                       className="w-3 h-3 rounded-full shrink-0 transition-transform duration-300"
-                      style={{ 
+                      style={{
                         backgroundColor: item.color,
                         transform: hoveredIndex === idx || isSelected ? 'scale(1.2)' : 'scale(1)'
                       }}
@@ -274,7 +273,7 @@ export default function DiseaseDoughnutChart({
         </div>
 
         {/* Right Column: Scrollable Patient list under the selected Condition */}
-        <div className="lg:col-span-7 flex flex-col gap-4">
+        <div className="lg:col-span-6 flex flex-col gap-4">
           <div className="flex items-center justify-between border-b border-gray-100 pb-2">
             <h4 className="text-[14.5px] font-extrabold text-[#1B2D5E] flex items-center gap-2">
               Patients Diagnosed with:{' '}
@@ -294,7 +293,7 @@ export default function DiseaseDoughnutChart({
                 Recovering: 'bg-[#EDF3F8] text-[#1A7A8A] border-[#1A7A8A]/10'
               }
               const statusColorClass = statusColors[patient.status] || 'bg-gray-100 text-gray-700'
-              
+
               return (
                 <div
                   key={patient.id}
@@ -344,11 +343,10 @@ export default function DiseaseDoughnutChart({
                         e.stopPropagation()
                         togglePriority(patient.id)
                       }}
-                      className={`p-1.5 rounded-lg border transition-all duration-150 cursor-pointer ${
-                        priorityPatients[patient.id]
-                          ? 'bg-amber-50 border-amber-200 text-amber-500 hover:scale-105'
-                          : 'border-gray-200 text-gray-300 hover:text-gray-400 hover:bg-gray-50'
-                      }`}
+                      className={`p-1.5 rounded-lg border transition-all duration-150 cursor-pointer ${priorityPatients[patient.id]
+                        ? 'bg-amber-50 border-amber-200 text-amber-500 hover:scale-105'
+                        : 'border-gray-200 text-gray-300 hover:text-gray-400 hover:bg-gray-50'
+                        }`}
                       title={priorityPatients[patient.id] ? "Remove from Priority" : "Mark as Priority"}
                     >
                       <StarIcon filled={priorityPatients[patient.id]} className="w-3.5 h-3.5" />
