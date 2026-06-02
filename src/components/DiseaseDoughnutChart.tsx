@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { type Patient } from '../types'
 import StatusIndicator from './StatusIndicator'
+import { usePatientsStore } from '../../store'
+import StarIcon from '../assets/icons/StarIcon'
 
 interface DiseaseDoughnutChartProps {
   patientsList: Patient[]
@@ -15,6 +17,8 @@ export default function DiseaseDoughnutChart({
 }: DiseaseDoughnutChartProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
   const [selectedIndex, setSelectedIndex] = useState<number>(0)
+
+  const { priorityPatients, togglePriority } = usePatientsStore()
 
   // 1. Group patients by condition
   const conditionGroups = patientsList.reduce((acc, patient) => {
@@ -333,6 +337,22 @@ export default function DiseaseDoughnutChart({
                       )}
                       {patient.status}
                     </span>
+
+                    {/* Priority Toggle Button */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        togglePriority(patient.id)
+                      }}
+                      className={`p-1.5 rounded-lg border transition-all duration-150 cursor-pointer ${
+                        priorityPatients[patient.id]
+                          ? 'bg-amber-50 border-amber-200 text-amber-500 hover:scale-105'
+                          : 'border-gray-200 text-gray-300 hover:text-gray-400 hover:bg-gray-50'
+                      }`}
+                      title={priorityPatients[patient.id] ? "Remove from Priority" : "Mark as Priority"}
+                    >
+                      <StarIcon filled={priorityPatients[patient.id]} className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 </div>
               )
