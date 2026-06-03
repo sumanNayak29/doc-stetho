@@ -24,10 +24,10 @@ The standout technical centerpiece is a custom **HTML5 Canvas rendering engine**
 
 - **🔒 Flexible Authentication** — Form-based login with smart email-to-name extraction, plus full **Google OAuth** integration via `@react-oauth/google`.
 - **📈 Live ICU Telemetry Monitor** — Real-time oscilloscope waveforms (ECG, ABP, PLETH) rendered directly on an **HTML5 Canvas** with sweeping animations and fluctuating digital readouts (HR, BP, SpO2, etCO2, Temp).
-- **📂 Patient Directory** — Searchable, filterable, and sortable patient table with status indicators (`Stable`, `Critical`, `Recovering`), priority flags, and live Heart Rate severity sorting.
+- **📂 Patient Directory & Search** — Searchable, filterable, and sortable patient table with status indicators (`Stable`, `Critical`, `Recovering`), priority flags, and live Heart Rate severity sorting.
 - **👤 Patient Profile Drawer** — Avatar upload with base64 encoding, cached to `localStorage` for persistence.
 - **🗓 Appointment & Schedule Manager** — Mark consultations as Attended or Rejected, with statuses persisted globally across sessions via Zustand.
-- **📊 Performance Analytics** — Recovery rates, consultation durations, satisfaction ratings, admission trends, and condition distribution — all visualized with custom Canvas charts.
+- **📊 Performance Analytics & Disease Distribution** — Recovery rates, consultation durations, satisfaction ratings, admission trends (Canvas charts), plus an interactive **SVG Disease Distribution Doughnut Chart** to drill down into patient lists by medical condition.
 - **⚙️ Settings Panel** — Doctor preferences including critical vital alerts, email notifications, and offline mode toggles.
 
 ---
@@ -37,9 +37,9 @@ The standout technical centerpiece is a custom **HTML5 Canvas rendering engine**
 | Category | Technology |
 |---|---|
 | **Core** | React 19, TypeScript, Vite |
-| **Styling** | Tailwind CSS v4 (HSL color system, custom grid layouts) |
+| **Styling & UI Components** | Tailwind CSS v4, Material UI (MUI) v9, Emotion |
 | **State Management** | Zustand v5 (bounded slice architecture with `persist` middleware) |
-| **Visualizations** | HTML5 Canvas API (custom vector math oscilloscope engine) |
+| **Visualizations** | HTML5 Canvas API (custom vector math oscilloscope engine), Interactive SVG paths |
 | **Authentication** | `@react-oauth/google` (Google OAuth 2.0) |
 
 > **Why Zustand over Redux?** The bounded slice pattern (`AuthSlice + AppointmentsSlice + PatientsSlice` → single store) gave us Redux-like separation of concerns with a fraction of the boilerplate, and the `persist` middleware handled localStorage serialization out of the box.
@@ -119,6 +119,8 @@ location / {
 ## 🧠 Challenges & Learnings
 
 **Canvas oscilloscope rendering** was the most complex part of this project. Building a real-time sweeping waveform that mimics actual ICU monitors required implementing a custom animation loop using `requestAnimationFrame`, maintaining a rolling data buffer, and applying vector math to simulate physiologically accurate waveform shapes (P-QRS-T complex for ECG, dicrotic notch for ABP). Getting smooth, jitter-free rendering at 60fps while simultaneously updating multiple channels was a significant performance challenge — solved by isolating each waveform to its own Canvas context and carefully managing draw boundaries.
+
+**SVG-based path rendering** was employed for the interactive disease distribution doughnut chart. Translating raw patient statistics into angles and SVG arc paths (`M startX startY A radius radius 0 largeArcFlag 1 endX endY`) allowed us to build a responsive, interactive component with micro-animation popouts without relying on heavy third-party charting packages.
 
 **Zustand's bounded slice pattern** was a deliberate architectural decision. As the store grew to cover auth, patients, and appointments, keeping slices composable yet unified via a single `persist`-wrapped store required careful typing and selector optimization using `useShallow` to prevent unnecessary re-renders.
 
