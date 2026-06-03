@@ -8,6 +8,9 @@ import StatusIndicator from './StatusIndicator'
 import StarIcon from '../assets/icons/StarIcon'
 import { usePatientsStore } from '../store'
 import PulseLiveChart from './PulseLiveChart'
+import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
+
 
 interface PatientDetailsPaneProps {
   patient: Patient
@@ -70,16 +73,17 @@ export default function PatientDetailsPane({
         <div className="flex-1 min-w-0 pr-6">
           <div className="flex items-center gap-2 mb-0.5 flex-wrap">
             <h4 className="text-[17px] font-extrabold text-[#1B2D5E] leading-snug truncate">{patient.name}</h4>
-            <button
-              onClick={() => togglePriority(patient.id)}
-              className={`p-1 rounded-lg transition-all duration-150 cursor-pointer ${priorityPatients[patient.id]
-                ? 'text-amber-500 hover:scale-110'
-                : 'text-gray-300 hover:text-amber-500 hover:scale-110'
-                }`}
-              title={priorityPatients[patient.id] ? "Remove from Priority" : "Mark as Priority"}
-            >
-              <StarIcon filled={priorityPatients[patient.id]} className="w-4 h-4" />
-            </button>
+            <Tooltip title={priorityPatients[patient.id] ? "Remove from Priority" : "Mark as Priority"} arrow>
+              <Button
+                onClick={() => togglePriority(patient.id)}
+                className={`!p-1 !rounded-lg !min-w-0 !normal-case transition-all duration-150 cursor-pointer ${priorityPatients[patient.id]
+                  ? '!text-amber-500 hover:!scale-110'
+                  : '!text-gray-300 hover:!text-amber-500 hover:!scale-110'
+                  }`}
+              >
+                <StarIcon filled={priorityPatients[patient.id]} className="w-4 h-4" />
+              </Button>
+            </Tooltip>
             <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold ${patient.status === 'Stable'
               ? 'bg-emerald-100 text-emerald-700'
               : patient.status === 'Critical'
@@ -93,24 +97,26 @@ export default function PatientDetailsPane({
             </span>
           </div>
           <p className="text-xs text-gray-400 font-semibold">{patient.id} • {patient.gender} • {patient.age} years</p>
-          <button
+          <Button
             onClick={onAvatarClick}
-            className="text-[11.5px] font-bold text-[#1A7A8A] hover:text-[#4DBFBF] transition-colors mt-2 cursor-pointer flex items-center gap-1.5"
+            className="!text-[11.5px] !font-bold !text-[#1A7A8A] hover:!text-[#4DBFBF] !transition-colors !mt-2 cursor-pointer !flex !items-center !gap-1.5 !min-w-0 !p-0 !normal-case"
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
             </svg>
             Change Photo
-          </button>
+          </Button>
         </div>
-        <button
-          onClick={onClose}
-          className="absolute top-0 right-0 p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600 cursor-pointer"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+        <Tooltip title="Close details" arrow>
+          <Button
+            onClick={onClose}
+            className="!absolute !top-0 !right-0 !p-1.5 !rounded-lg hover:!bg-gray-100 transition-colors !text-gray-400 hover:!text-gray-600 cursor-pointer !min-w-0 !normal-case"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </Button>
+        </Tooltip>
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-gray-50/50 rounded-xl p-3.5 border border-gray-100">

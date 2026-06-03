@@ -6,6 +6,19 @@ import CheckCircleIcon from '../assets/icons/CheckCircleIcon'
 import StethoscopeIcon from '../assets/icons/StethoscopeIcon'
 import { type UserProfile, type Patient } from '../types/types'
 import StatusIndicator from './StatusIndicator'
+import Button from '@mui/material/Button';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import Tooltip from '@mui/material/Tooltip';
+
+
+const inputSx = {
+  '& .MuiOutlinedInput-notchedOutline': {
+    border: 'none',
+  },
+  '& input': {
+    padding: 0,
+  }
+};
 
 interface HeaderProps {
   user: UserProfile
@@ -119,12 +132,13 @@ export default function Header({
             <span className="absolute left-3.5 text-gray-400">
               <SearchIcon />
             </span>
-            <input
+            <OutlinedInput
               type="text"
               placeholder="Search patient, diagnosis..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-64 h-[40px] pl-10 pr-4 rounded-xl border border-gray-200 bg-[#EDF3F8]/50 text-sm text-[#1B2D5E] placeholder-gray-400 focus:outline-none focus:border-[#4DBFBF] focus:bg-white transition-all duration-200"
+              className="!w-64 !h-[40px] !pl-10 !pr-4 !rounded-xl !border !border-gray-200 !bg-[#EDF3F8]/50 !text-sm !text-[#1B2D5E] placeholder-gray-400 focus-within:!border-[#4DBFBF] focus-within:!bg-white transition-all duration-200"
+              sx={inputSx}
             />
           </div>
 
@@ -133,19 +147,20 @@ export default function Header({
 
         {/* Notification Icon and Dropdown */}
         <div className="relative" ref={dropdownRef}>
-          <button
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-            className={`relative w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-200 cursor-pointer ${dropdownOpen
-              ? 'bg-[#1A7A8A]/10 text-[#1A7A8A] border border-[#1A7A8A]/20'
-              : 'bg-gray-100/80 hover:bg-gray-100 border border-transparent text-gray-600'
-              }`}
-            title="View Alerts"
-          >
-            <BellIcon />
-            {unreadCount > 0 && (
-              <span className="absolute top-2 right-2.5 w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-            )}
-          </button>
+          <Tooltip title="View Alerts" arrow>
+            <Button
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              className={`!relative !w-10 !h-10 !min-w-0 !flex !items-center !justify-center !rounded-xl !normal-case transition-all duration-200 cursor-pointer ${dropdownOpen
+                ? '!bg-[#1A7A8A]/10 !text-[#1A7A8A] !border !border-[#1A7A8A]/20'
+                : '!bg-gray-100/80 hover:!bg-gray-100 !border !border-transparent !text-gray-600'
+                }`}
+            >
+              <BellIcon />
+              {unreadCount > 0 && (
+                <span className="absolute top-2 right-2.5 w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+              )}
+            </Button>
+          </Tooltip>
 
           {/* Notifications Dropdown Panel */}
           {dropdownOpen && (
@@ -153,12 +168,12 @@ export default function Header({
               <div className="flex items-center justify-between border-b border-gray-100 pb-2">
                 <span className="text-[14px] font-extrabold text-[#1B2D5E]">Alerts & Messages</span>
                 {unreadCount > 0 && (
-                  <button
+                  <Button
                     onClick={handleMarkAllAsRead}
-                    className="text-[11px] font-bold text-[#1A7A8A] hover:underline cursor-pointer"
+                    className="!text-[11px] !font-bold !text-[#1A7A8A] hover:!underline cursor-pointer !min-w-0 !p-0 !normal-case"
                   >
                     Mark all read
-                  </button>
+                  </Button>
                 )}
               </div>
 
@@ -191,13 +206,13 @@ export default function Header({
                               Critical Alert: {patient.name}
                             </span>
                             {isUnread && (
-                              <button
+                              <Button
                                 onClick={(e) => handleMarkAsRead(patient.id, e)}
-                                className="text-[9px] font-extrabold text-red-500 bg-red-100/50 px-1.5 py-0.5 rounded hover:bg-red-100 shrink-0"
+                                className="!text-[9px] !font-extrabold !text-red-500 !bg-red-100/50 !px-1.5 !py-0.5 !rounded hover:!bg-red-100 !shrink-0 !min-w-0 !normal-case"
                                 title="Dismiss"
                               >
                                 Read
-                              </button>
+                              </Button>
                             )}
                           </div>
                           <span className="text-[11px] text-gray-500 font-medium mt-1 truncate">

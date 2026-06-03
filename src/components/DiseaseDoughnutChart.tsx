@@ -3,6 +3,8 @@ import { type Patient } from '../types/types'
 import StatusIndicator from './StatusIndicator'
 import { usePatientsStore } from '../store'
 import StarIcon from '../assets/icons/StarIcon'
+import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
 
 interface DiseaseDoughnutChartProps {
   patientsList: Patient[]
@@ -342,19 +344,20 @@ export default function DiseaseDoughnutChart({
                     </span>
 
                     {/* Priority Toggle Button */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        togglePriority(patient.id)
-                      }}
-                      className={`p-1.5 rounded-lg border transition-all duration-150 cursor-pointer ${priorityPatients[patient.id]
-                        ? 'bg-amber-50 border-amber-200 text-amber-500 hover:scale-105'
-                        : 'border-gray-200 text-gray-300 hover:text-gray-400 hover:bg-gray-50'
-                        }`}
-                      title={priorityPatients[patient.id] ? "Remove from Priority" : "Mark as Priority"}
-                    >
-                      <StarIcon filled={priorityPatients[patient.id]} className="w-3.5 h-3.5" />
-                    </button>
+                    <Tooltip title={priorityPatients[patient.id] ? "Remove from Priority" : "Mark as Priority"} arrow>
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          togglePriority(patient.id)
+                        }}
+                        className={`!p-1.5 !rounded-lg !border transition-all duration-150 cursor-pointer !min-w-0 !normal-case ${priorityPatients[patient.id]
+                          ? '!bg-amber-50 !border-amber-200 !text-amber-500 hover:!scale-105'
+                          : '!border-gray-200 !text-gray-300 hover:!text-gray-400 hover:!bg-gray-50'
+                          }`}
+                      >
+                        <StarIcon filled={priorityPatients[patient.id]} className="w-3.5 h-3.5" />
+                      </Button>
+                    </Tooltip>
                   </div>
                 </div>
               )

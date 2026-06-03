@@ -5,6 +5,8 @@ import CalendarIcon from '../assets/icons/CalendarIcon'
 import BarChartIcon from '../assets/icons/BarChartIcon'
 import SettingsIcon from '../assets/icons/SettingsIcon'
 import SignOutIcon from '../assets/icons/SignOutIcon'
+import Button from '@mui/material/Button';
+
 
 interface SidebarProps {
   activeTab: string
@@ -38,12 +40,12 @@ export default function Sidebar({ activeTab, setActiveTab, onLogout }: SidebarPr
             { name: 'Analytics', icon: <BarChartIcon /> },
             { name: 'Settings', icon: <SettingsIcon /> }
           ].map(item => (
-            <button
+            <Button
               key={item.name}
               onClick={() => setActiveTab(item.name)}
-              className={`w-full flex items-center justify-center group-hover:justify-start gap-0 group-hover:gap-3.5 px-3 group-hover:px-4 py-3 rounded-xl text-[14.5px] font-semibold transition-all duration-200 cursor-pointer ${activeTab === item.name
-                  ? 'bg-[#1A7A8A] text-white shadow-md shadow-[#1A7A8A]/25'
-                  : 'text-white/60 hover:text-white hover:bg-white/5'
+              className={`!w-full !flex !items-center !justify-center group-hover:!justify-start !gap-0 group-hover:!gap-3.5 !px-3 group-hover:!px-4 !py-3 !rounded-xl !text-[14.5px] !font-semibold !normal-case transition-all duration-200 cursor-pointer ${activeTab === item.name
+                ? '!bg-[#1A7A8A] !text-white !shadow-md !shadow-[#1A7A8A]/25'
+                : '!text-white/60 hover:!text-white hover:!bg-white/5'
                 }`}
             >
               <div className="w-5 h-5 shrink-0 flex items-center justify-center">
@@ -52,16 +54,16 @@ export default function Sidebar({ activeTab, setActiveTab, onLogout }: SidebarPr
               <span className="opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap overflow-hidden w-0 group-hover:w-auto">
                 {item.name}
               </span>
-            </button>
+            </Button>
           ))}
         </nav>
       </div>
 
       {/* Sidebar Footer / User Info */}
       <div className="p-3 group-hover:p-4 border-t border-white/10 transition-all duration-300">
-        <button
+        <Button
           onClick={onLogout}
-          className="w-full flex items-center justify-center group-hover:justify-start gap-0 group-hover:gap-2 px-3 group-hover:px-4 py-3 rounded-xl text-[14.5px] font-semibold text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-200 border border-red-500/15 cursor-pointer"
+          className="!w-full !flex !items-center !justify-center group-hover:!justify-start !gap-0 group-hover:!gap-2 !px-3 group-hover:!px-4 !py-3 !rounded-xl !text-[14.5px] !font-semibold !text-red-400 hover:!text-red-300 hover:!bg-red-500/10 transition-all duration-200 !border !border-red-500/15 cursor-pointer !normal-case"
         >
           <div className="w-5 h-5 shrink-0 flex items-center justify-center">
             <SignOutIcon />
@@ -69,7 +71,7 @@ export default function Sidebar({ activeTab, setActiveTab, onLogout }: SidebarPr
           <span className="opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap overflow-hidden w-0 group-hover:w-auto">
             Sign Out
           </span>
-        </button>
+        </Button>
       </div>
     </aside>
   )

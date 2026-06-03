@@ -6,6 +6,9 @@ import { type Patient } from '../types/types'
 import StatusIndicator from './StatusIndicator'
 import StarIcon from '../assets/icons/StarIcon'
 import { usePatientsStore } from '../store'
+import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
+
 
 interface PatientTableProps {
   loading: boolean
@@ -132,19 +135,20 @@ export default function PatientTable({
 
               {/* Priority Toggle Button */}
               <td className="py-4 text-right">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    togglePriority(patient.id)
-                  }}
-                  className={`p-2 rounded-xl border transition-all duration-200 cursor-pointer hover:scale-105 ${priorityPatients[patient.id]
-                    ? 'bg-amber-50 border-amber-200 text-amber-500 hover:bg-amber-100/80 shadow-sm shadow-amber-500/10'
-                    : 'border-gray-200/80 text-gray-300 hover:text-gray-400 hover:border-gray-300 hover:bg-gray-50/50'
-                    }`}
-                  title={priorityPatients[patient.id] ? "Remove from Priority" : "Mark as Priority"}
-                >
-                  <StarIcon filled={priorityPatients[patient.id]} className="w-4 h-4" />
-                </button>
+                <Tooltip title={priorityPatients[patient.id] ? "Remove from Priority" : "Mark as Priority"} arrow>
+                  <Button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      togglePriority(patient.id)
+                    }}
+                    className={`!p-2 !rounded-xl !border transition-all duration-200 cursor-pointer hover:!scale-105 !min-w-0 !normal-case ${priorityPatients[patient.id]
+                      ? '!bg-amber-50 !border-amber-200 !text-amber-500 hover:!bg-amber-100/80 !shadow-sm !shadow-amber-500/10'
+                      : '!border-gray-200/80 !text-gray-300 hover:!text-gray-400 hover:!border-gray-300 hover:!bg-gray-50/50'
+                      }`}
+                  >
+                    <StarIcon filled={priorityPatients[patient.id]} className="w-4 h-4" />
+                  </Button>
+                </Tooltip>
               </td>
             </tr>
           ))

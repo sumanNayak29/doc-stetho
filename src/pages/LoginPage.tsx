@@ -9,8 +9,20 @@ import BarChartIcon from '../assets/icons/BarChartIcon'
 import ArrowRightIcon from '../assets/icons/ArrowRightIcon'
 import DocStethoIcon from '../assets/icons/DocStethoIcon'
 import GoogleLogoIcon from '../assets/icons/GoogleLogoIcon'
-import CheckIcon from '../assets/icons/CheckIcon'
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import Tooltip from '@mui/material/Tooltip';
 
+
+const inputSx = {
+  '& .MuiOutlinedInput-notchedOutline': {
+    border: 'none',
+  },
+  '& input': {
+    padding: 0,
+  }
+};
 
 interface DoctorRecord {
   name: string
@@ -199,15 +211,16 @@ function LoginPage({ onLoginSuccess }: LoginPageProps) {
                 <span className="absolute left-3.5 flex items-center text-gray-400 pointer-events-none z-[1] [&_svg]:w-[18px] [&_svg]:h-[18px]">
                   <MailIcon />
                 </span>
-                <input
+                <OutlinedInput
                   id="email"
                   type="email"
-                  className="peer w-full h-[50px] pl-11 pr-11 border-[1.5px] border-gray-200 rounded-xl text-[14.5px] text-[#1B2D5E] bg-white/80 outline-none transition-all duration-200 placeholder:text-[#b0b8c1] placeholder:text-sm focus:border-[#4DBFBF] focus:shadow-[0_0_0_3px_rgba(77,191,191,0.15)] focus:bg-white"
+                  className="peer w-full h-[50px] pl-11 pr-11 border-[1.5px] border-gray-200 rounded-xl text-[14.5px] text-[#1B2D5E] bg-white/80 outline-none transition-all duration-200 placeholder:text-[#b0b8c1] placeholder:text-sm focus-within:border-[#4DBFBF] focus-within:shadow-[0_0_0_3px_rgba(77,191,191,0.15)] focus-within:bg-white"
                   placeholder="doctor@hospital.com"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   required
                   autoComplete="email"
+                  sx={inputSx}
                 />
               </div>
             </div>
@@ -226,53 +239,51 @@ function LoginPage({ onLoginSuccess }: LoginPageProps) {
                 <span className="absolute left-3.5 flex items-center text-gray-400 pointer-events-none z-[1] [&_svg]:w-[18px] [&_svg]:h-[18px]">
                   <LockIcon />
                 </span>
-                <input
+                <OutlinedInput
                   id="password"
                   type={showPassword ? 'text' : 'password'}
-                  className="peer w-full h-[50px] pl-11 pr-11 border-[1.5px] border-gray-200 rounded-xl text-[14.5px] text-[#1B2D5E] bg-white/80 outline-none transition-all duration-200 placeholder:text-[#b0b8c1] placeholder:text-sm focus:border-[#4DBFBF] focus:shadow-[0_0_0_3px_rgba(77,191,191,0.15)] focus:bg-white"
+                  className="peer w-full h-[50px] pl-11 pr-11 border-[1.5px] border-gray-200 rounded-xl text-[14.5px] text-[#1B2D5E] bg-white/80 outline-none transition-all duration-200 placeholder:text-[#b0b8c1] placeholder:text-sm focus-within:border-[#4DBFBF] focus-within:shadow-[0_0_0_3px_rgba(77,191,191,0.15)] focus-within:bg-white"
                   placeholder="Enter your password"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   required
                   autoComplete="current-password"
+                  sx={inputSx}
                 />
-                <button
-                  type="button"
-                  id="toggle-password-btn"
-                  className="absolute right-3.5 bg-transparent border-none cursor-pointer text-gray-400 flex items-center p-1 rounded-md transition-all duration-200 hover:text-[#1A7A8A] hover:bg-[rgba(77,191,191,0.1)] [&_svg]:w-[18px] [&_svg]:h-[18px]"
-                  onClick={() => setShowPassword(v => !v)}
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-                </button>
+                <Tooltip title={showPassword ? 'Hide password' : 'Show password'} arrow>
+                  <Button
+                    type="button"
+                    id="toggle-password-btn"
+                    className="!absolute !right-3.5 !bg-transparent !border-none !min-w-0 !p-1 !text-gray-400 !normal-case transition-all duration-200 hover:!text-[#1A7A8A] hover:!bg-[rgba(77,191,191,0.1)] [&_svg]:w-[18px] [&_svg]:h-[18px]"
+                    onClick={() => setShowPassword(v => !v)}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                  </Button>
+                </Tooltip>
               </div>
             </div>
 
             {/* Remember me */}
             <div className="flex items-center">
-              <label className="flex items-center gap-2.5 cursor-pointer text-[13.5px] text-gray-600 select-none" htmlFor="remember-me">
-                <input
+              <label className="flex items-center gap-1 cursor-pointer text-[13.5px] text-gray-600 select-none" htmlFor="remember-me">
+                <Checkbox
                   id="remember-me"
-                  type="checkbox"
-                  className="hidden"
                   checked={rememberMe}
                   onChange={e => setRememberMe(e.target.checked)}
+                  size="small"
+                  className="!text-[#b0b8c1] [&.Mui-checked]:!text-[#1A7A8A] !p-1 !mr-0.5"
                 />
-                <span className={`w-[18px] h-[18px] min-w-[18px] rounded-[5px] border-[1.5px] flex items-center justify-center transition-all duration-200 ${rememberMe ? 'bg-[linear-gradient(135deg,#1A7A8A,#4DBFBF)] border-[#4DBFBF]' : 'border-gray-300 bg-white'}`}>
-                  {rememberMe && (
-                    <CheckIcon stroke="white" />
-                  )}
-                </span>
                 <span>Remember me for 60 days</span>
               </label>
             </div>
 
-            {/* Submit button */}
-            <button
+            {/* Submit Button */}
+            <Button
               type="submit"
               id="login-submit-btn"
               disabled={isLoading}
-              className="relative w-full h-[52px] border-none rounded-[13px] bg-[linear-gradient(135deg,#1B2D5E_0%,#1A7A8A_60%,#4DBFBF_100%)] text-white text-[15.5px] font-bold tracking-[0.2px] cursor-pointer flex items-center justify-center gap-2.5 overflow-hidden transition-all duration-[180ms] shadow-[0_4px_20px_rgba(26,122,138,0.35)] mt-1 [&_svg]:w-5 [&_svg]:h-5 [&_svg]:transition-transform [&_svg]:duration-200 before:content-[''] before:absolute before:top-0 before:-left-full before:w-full before:h-full before:bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent)] before:transition-[left] before:duration-500 hover:before:left-full hover:enabled:-translate-y-0.5 hover:enabled:shadow-[0_8px_28px_rgba(26,122,138,0.45)] hover:enabled:brightness-[1.08] active:enabled:translate-y-0 disabled:opacity-80 disabled:cursor-not-allowed"
+              className="!relative !w-full !h-[52px] !border-none !rounded-[13px] !bg-[linear-gradient(135deg,#1B2D5E_0%,#1A7A8A_60%,#4DBFBF_100%)] !text-white !text-[15.5px] !font-bold !tracking-[0.2px] !normal-case !flex !items-center !justify-center !gap-2.5 !overflow-hidden transition-all duration-[180ms] !shadow-[0_4px_20px_rgba(26,122,138,0.35)] !mt-1 [&_svg]:w-5 [&_svg]:h-5 [&_svg]:transition-transform [&_svg]:duration-200 before:content-[''] before:absolute before:top-0 before:-left-full before:w-full before:h-full before:bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent)] before:transition-[left] before:duration-500 hover:before:left-full hover:enabled:-translate-y-0.5 hover:enabled:!shadow-[0_8px_28px_rgba(26,122,138,0.45)] hover:enabled:brightness-[1.08] active:enabled:translate-y-0 disabled:opacity-80"
             >
               {isLoading ? (
                 <>
@@ -285,7 +296,7 @@ function LoginPage({ onLoginSuccess }: LoginPageProps) {
                   <ArrowRightIcon />
                 </>
               )}
-            </button>
+            </Button>
           </form>
 
           {/* ── Divider ── */}
@@ -296,15 +307,15 @@ function LoginPage({ onLoginSuccess }: LoginPageProps) {
           </div>
 
           {/* ── Google Sign-In ── */}
-          <button
+          <Button
             type="button"
             id="google-signin-btn"
             onClick={() => googleLogin()}
-            className="w-full h-[48px] flex items-center justify-center gap-3 rounded-xl border-[1.5px] border-gray-200 bg-white text-[14px] font-semibold text-gray-700 transition-all duration-200 hover:border-[#4DBFBF] hover:shadow-[0_2px_12px_rgba(77,191,191,0.15)] hover:-translate-y-0.5 active:translate-y-0"
+            className="!w-full !h-[48px] !flex !items-center !justify-center !gap-3 !rounded-xl !border-[1.5px] !border-gray-200 !bg-white !text-[14px] !font-semibold !text-gray-700 !normal-case transition-all duration-200 hover:!border-[#4DBFBF] hover:!shadow-[0_2px_12px_rgba(77,191,191,0.15)] hover:!-translate-y-0.5 active:translate-y-0"
           >
             <GoogleLogoIcon />
             Sign in with Google
-          </button>
+          </Button>
 
         </div>
       </div>

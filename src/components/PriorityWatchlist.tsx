@@ -5,6 +5,9 @@ import BoltIcon from '../assets/icons/BoltIcon'
 import TempIcon from '../assets/icons/TempIcon'
 import StarIcon from '../assets/icons/StarIcon'
 import StatusIndicator from './StatusIndicator'
+import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
+
 
 interface PriorityWatchlistProps {
   patientsList: Patient[]
@@ -103,16 +106,17 @@ export default function PriorityWatchlist({
                   </div>
 
                   {/* Priority Toggle Button */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      togglePriority(patient.id)
-                    }}
-                    className="p-2 bg-amber-50 hover:bg-amber-100/80 border border-amber-200 text-amber-500 rounded-xl transition-all duration-150 cursor-pointer shadow-sm"
-                    title="Remove from Priority Watchlist"
-                  >
-                    <StarIcon filled={true} className="w-4 h-4" />
-                  </button>
+                  <Tooltip title="Remove from Priority Watchlist" arrow>
+                    <Button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        togglePriority(patient.id)
+                      }}
+                      className="!p-2 !bg-amber-50 hover:!bg-amber-100/80 !border !border-amber-200 !text-amber-500 !rounded-xl transition-all duration-150 cursor-pointer !shadow-sm !min-w-0 !normal-case"
+                    >
+                      <StarIcon filled={true} className="w-4 h-4" />
+                    </Button>
+                  </Tooltip>
                 </div>
               </div>
             )

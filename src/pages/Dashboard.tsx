@@ -14,6 +14,42 @@ import PatientDetailsPane from '../components/PatientDetailsPane'
 import PriorityWatchlist from '../components/PriorityWatchlist'
 import { useAppointmentsStore, usePatientsStore, useSettingsStore } from '../store'
 import StatusIndicator from '../components/StatusIndicator'
+import Button from '@mui/material/Button';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import Switch from '@mui/material/Switch';
+
+
+const selectSx = {
+  '.MuiOutlinedInput-notchedOutline': {
+    borderColor: '#e5e7eb',
+  },
+  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+    borderColor: '#1A7A8A',
+    borderWidth: '1.5px',
+  },
+  '&:hover .MuiOutlinedInput-notchedOutline': {
+    borderColor: '#e5e7eb',
+  },
+  '.MuiSelect-select': {
+    paddingLeft: '12px',
+    paddingRight: '24px',
+    display: 'flex',
+    alignItems: 'center',
+    fontSize: '12px',
+    fontWeight: 600,
+    color: '#1B2D5E',
+  }
+};
+
+const switchSx = {
+  '& .MuiSwitch-switchBase.Mui-checked': {
+    color: '#1A7A8A',
+  },
+  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+    backgroundColor: '#1A7A8A',
+  },
+};
 
 interface DashboardProps {
   user: UserProfile
@@ -433,60 +469,68 @@ function Dashboard({ user, onLogout }: DashboardProps) {
                   {/* Status Filter */}
                   <div className="flex flex-col gap-1.5">
                     <label className="text-[10px] font-extrabold text-[#1B2D5E] uppercase tracking-wider">Status</label>
-                    <select
+                    <Select
                       value={statusFilter}
-                      onChange={(e) => setStatusFilter(e.target.value)}
-                      className="w-full h-9 px-3 rounded-lg border border-gray-200 bg-white text-xs font-semibold text-[#1B2D5E] focus:outline-none focus:border-[#1A7A8A]"
+                      onChange={(e) => setStatusFilter(e.target.value as string)}
+                      size="small"
+                      className="!w-full !h-9 !bg-white !rounded-lg"
+                      sx={selectSx}
                     >
-                      <option value="All">All Statuses</option>
-                      <option value="Stable">Stable</option>
-                      <option value="Critical">Critical</option>
-                      <option value="Recovering">Recovering</option>
-                    </select>
+                      <MenuItem value="All" sx={{ fontSize: '12px', fontWeight: 600, color: '#1B2D5E' }}>All Statuses</MenuItem>
+                      <MenuItem value="Stable" sx={{ fontSize: '12px', fontWeight: 600, color: '#1B2D5E' }}>Stable</MenuItem>
+                      <MenuItem value="Critical" sx={{ fontSize: '12px', fontWeight: 600, color: '#1B2D5E' }}>Critical</MenuItem>
+                      <MenuItem value="Recovering" sx={{ fontSize: '12px', fontWeight: 600, color: '#1B2D5E' }}>Recovering</MenuItem>
+                    </Select>
                   </div>
 
                   {/* Priority Filter */}
                   <div className="flex flex-col gap-1.5">
                     <label className="text-[10px] font-extrabold text-[#1B2D5E] uppercase tracking-wider">Priority</label>
-                    <select
+                    <Select
                       value={priorityFilter}
-                      onChange={(e) => setPriorityFilter(e.target.value)}
-                      className="w-full h-9 px-3 rounded-lg border border-gray-200 bg-white text-xs font-semibold text-[#1B2D5E] focus:outline-none focus:border-[#1A7A8A]"
+                      onChange={(e) => setPriorityFilter(e.target.value as string)}
+                      size="small"
+                      className="!w-full !h-9 !bg-white !rounded-lg"
+                      sx={selectSx}
                     >
-                      <option value="All">All Patients</option>
-                      <option value="Priority">Priority Only</option>
-                    </select>
+                      <MenuItem value="All" sx={{ fontSize: '12px', fontWeight: 600, color: '#1B2D5E' }}>All Patients</MenuItem>
+                      <MenuItem value="Priority" sx={{ fontSize: '12px', fontWeight: 600, color: '#1B2D5E' }}>Priority Only</MenuItem>
+                    </Select>
                   </div>
 
                   {/* Gender Filter */}
                   <div className="flex flex-col gap-1.5">
                     <label className="text-[10px] font-extrabold text-[#1B2D5E] uppercase tracking-wider">Gender</label>
-                    <select
+                    <Select
                       value={genderFilter}
-                      onChange={(e) => setGenderFilter(e.target.value)}
-                      className="w-full h-9 px-3 rounded-lg border border-gray-200 bg-white text-xs font-semibold text-[#1B2D5E] focus:outline-none focus:border-[#1A7A8A]"
+                      onChange={(e) => setGenderFilter(e.target.value as string)}
+                      size="small"
+                      className="!w-full !h-9 !bg-white !rounded-lg"
+                      sx={selectSx}
                     >
-                      <option value="All">All Genders</option>
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                    </select>
+                      <MenuItem value="All" sx={{ fontSize: '12px', fontWeight: 600, color: '#1B2D5E' }}>All Genders</MenuItem>
+                      <MenuItem value="Male" sx={{ fontSize: '12px', fontWeight: 600, color: '#1B2D5E' }}>Male</MenuItem>
+                      <MenuItem value="Female" sx={{ fontSize: '12px', fontWeight: 600, color: '#1B2D5E' }}>Female</MenuItem>
+                    </Select>
                   </div>
 
                   {/* Sort Controls */}
                   <div className="flex flex-col gap-1.5">
                     <label className="text-[10px] font-extrabold text-[#1B2D5E] uppercase tracking-wider">Sort By</label>
-                    <select
+                    <Select
                       value={sortBy}
-                      onChange={(e) => setSortBy(e.target.value)}
-                      className="w-full h-9 px-3 rounded-lg border border-gray-200 bg-white text-xs font-semibold text-[#1B2D5E] focus:outline-none focus:border-[#1A7A8A]"
+                      onChange={(e) => setSortBy(e.target.value as string)}
+                      size="small"
+                      className="!w-full !h-9 !bg-white !rounded-lg"
+                      sx={selectSx}
                     >
-                      <option value="default">Default (ID)</option>
-                      <option value="name-asc">Name (A-Z)</option>
-                      <option value="name-desc">Name (Z-A)</option>
-                      <option value="age-asc">Age (Youngest first)</option>
-                      <option value="age-desc">Age (Oldest first)</option>
-                      <option value="heart-desc">Heart Rate (High to Low)</option>
-                    </select>
+                      <MenuItem value="default" sx={{ fontSize: '12px', fontWeight: 600, color: '#1B2D5E' }}>Default (ID)</MenuItem>
+                      <MenuItem value="name-asc" sx={{ fontSize: '12px', fontWeight: 600, color: '#1B2D5E' }}>Name (A-Z)</MenuItem>
+                      <MenuItem value="name-desc" sx={{ fontSize: '12px', fontWeight: 600, color: '#1B2D5E' }}>Name (Z-A)</MenuItem>
+                      <MenuItem value="age-asc" sx={{ fontSize: '12px', fontWeight: 600, color: '#1B2D5E' }}>Age (Youngest first)</MenuItem>
+                      <MenuItem value="age-desc" sx={{ fontSize: '12px', fontWeight: 600, color: '#1B2D5E' }}>Age (Oldest first)</MenuItem>
+                      <MenuItem value="heart-desc" sx={{ fontSize: '12px', fontWeight: 600, color: '#1B2D5E' }}>Heart Rate (High to Low)</MenuItem>
+                    </Select>
                   </div>
                 </div>
 
@@ -683,26 +727,26 @@ function Dashboard({ user, onLogout }: DashboardProps) {
                         <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between gap-3 animate-[slideUp_0.2s_ease_both]">
                           <span className="text-[12px] text-gray-500 font-bold">Action:</span>
                           <div className="flex gap-2">
-                            <button
+                            <Button
                               onClick={(e) => {
                                 e.stopPropagation()
                                 setAppointmentStatus(appointment.id, 'attended')
                                 setSelectedApptId(null)
                               }}
-                              className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm hover:shadow"
+                              className="!px-3.5 !py-1.5 !bg-emerald-600 hover:!bg-emerald-700 !text-white !rounded-xl !text-xs !font-bold !normal-case transition-all cursor-pointer !shadow-sm hover:!shadow !min-w-0"
                             >
                               Attend
-                            </button>
-                            <button
+                            </Button>
+                            <Button
                               onClick={(e) => {
                                 e.stopPropagation()
                                 setAppointmentStatus(appointment.id, 'rejected')
                                 setSelectedApptId(null)
                               }}
-                              className="px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm hover:shadow"
+                              className="!px-3.5 !py-1.5 !bg-red-600 hover:!bg-red-700 !text-white !rounded-xl !text-xs !font-bold !normal-case transition-all cursor-pointer !shadow-sm hover:!shadow !min-w-0"
                             >
                               Reject
-                            </button>
+                            </Button>
                           </div>
                         </div>
                       )}
@@ -790,8 +834,7 @@ function Dashboard({ user, onLogout }: DashboardProps) {
                     <span className="text-sm font-bold text-[#1B2D5E]">Email Notifications</span>
                     <p className="text-xs text-gray-400 font-medium">Receive daily schedule summaries via email</p>
                   </div>
-                  <input
-                    type="checkbox"
+                  <Switch
                     checked={emailNotifications}
                     onChange={(e) => {
                       setEmailNotifications(e.target.checked)
@@ -802,7 +845,7 @@ function Dashboard({ user, onLogout }: DashboardProps) {
                         type: "success"
                       })
                     }}
-                    className="accent-[#1A7A8A] h-5 w-5 rounded cursor-pointer"
+                    sx={switchSx}
                   />
                 </div>
                 <div className="py-4 flex justify-between items-center">
@@ -810,8 +853,7 @@ function Dashboard({ user, onLogout }: DashboardProps) {
                     <span className="text-sm font-bold text-[#1B2D5E]">Critical Alerts</span>
                     <p className="text-xs text-gray-400 font-medium">Show alert when a patient vital is critical</p>
                   </div>
-                  <input
-                    type="checkbox"
+                  <Switch
                     checked={criticalAlerts}
                     onChange={(e) => {
                       setCriticalAlerts(e.target.checked)
@@ -820,7 +862,7 @@ function Dashboard({ user, onLogout }: DashboardProps) {
                         type: "success"
                       })
                     }}
-                    className="accent-[#1A7A8A] h-5 w-5 rounded cursor-pointer"
+                    sx={switchSx}
                   />
                 </div>
                 <div className="py-4 flex justify-between items-center">
@@ -828,8 +870,7 @@ function Dashboard({ user, onLogout }: DashboardProps) {
                     <span className="text-sm font-bold text-[#1B2D5E]">Offline Mode</span>
                     <p className="text-xs text-gray-400 font-medium">Keep database cached for offline view</p>
                   </div>
-                  <input
-                    type="checkbox"
+                  <Switch
                     checked={offlineMode}
                     onChange={(e) => {
                       setOfflineMode(e.target.checked)
@@ -840,7 +881,7 @@ function Dashboard({ user, onLogout }: DashboardProps) {
                         type: "success"
                       })
                     }}
-                    className="accent-[#1A7A8A] h-5 w-5 rounded cursor-pointer"
+                    sx={switchSx}
                   />
                 </div>
               </div>
