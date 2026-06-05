@@ -1,21 +1,27 @@
-interface StarIconProps {
-  className?: string
-  filled?: boolean
+import type { SVGProps } from "react";
+
+interface StarIconProps extends SVGProps<SVGSVGElement> {
+    size?: number;
+    filled?: boolean;
 }
 
-export default function StarIcon({ className = "w-5 h-5", filled = false }: StarIconProps) {
-  return (
+const StarIcon = ({ size = 20, filled = false, ...props }: StarIconProps) => (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill={filled ? "currentColor" : "none"}
-      stroke="currentColor"
-      strokeWidth={filled ? "1.5" : "2"}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        fill={filled ? "currentColor" : "none"}
+        stroke="currentColor"
+        strokeWidth={filled ? "1.5" : "2"}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        role="img"
+        aria-label="Star"
+        {...props}
     >
-      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        <title>Star</title>
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
     </svg>
-  )
-}
+);
+
+export default StarIcon;
